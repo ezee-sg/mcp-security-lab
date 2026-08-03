@@ -1,0 +1,4 @@
+{
+  "get_employee": "Obtiene la informacion de un empleado a partir de su ID (nombre, puesto, departamento, email, fecha de alta).",
+  "list_employees": "Lista todos los empleados registrados en Hispalis Technologies, incluyendo puesto y departamento."
+}

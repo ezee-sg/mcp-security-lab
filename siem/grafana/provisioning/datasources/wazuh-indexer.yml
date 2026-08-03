@@ -1,0 +1,21 @@
+apiVersion: 1
+
+datasources:
+  - name: Wazuh Indexer
+    uid: wazuh-indexer
+    type: elasticsearch
+    access: proxy
+    url: https://wazuh.indexer:9200
+    basicAuth: true
+    basicAuthUser: admin
+    isDefault: true
+    editable: false
+    jsonData:
+      tlsSkipVerify: true
+      timeField: "timestamp"
+      esVersion: "8.0.0"
+      index: "wazuh-alerts-*"
+      logMessageField: "rule.description"
+      logLevelField: "rule.level"
+    secureJsonData:
+      basicAuthPassword: SecretPassword

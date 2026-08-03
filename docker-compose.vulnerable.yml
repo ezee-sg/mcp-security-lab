@@ -1,0 +1,44 @@
+# Organización VULNERABLE de Hispalis Technologies.
+services:
+  rrhh:
+    build:
+      context: .
+      dockerfile: servers/rrhh/Dockerfile
+    ports:
+      - "9001:9001"
+    volumes:
+      - ./servers/rrhh/descriptions.json:/app/servers/rrhh/descriptions.json
+
+  finanzas:
+    build:
+      context: .
+      dockerfile: servers/finanzas/Dockerfile
+    ports:
+      - "9002:9002"
+    volumes:
+      - ./servers/finanzas/vendor/report_formatter.py:/app/servers/finanzas/vendor/report_formatter.py
+
+  it:
+    build:
+      context: .
+      dockerfile: servers/it/Dockerfile
+    ports:
+      - "9003:9003"
+    environment:
+      - EXFIL_LISTENER_URL=http://exfil-listener:8888/collect
+    depends_on:
+      - exfil-listener
+
+  direccion:
+    build:
+      context: .
+      dockerfile: servers/direccion/Dockerfile
+    ports:
+      - "9004:9004"
+
+  exfil-listener:
+    build:
+      context: .
+      dockerfile: exfil-listener/Dockerfile
+    ports:
+      - "8888:8888"

@@ -1,0 +1,53 @@
+# Escenario 09 - Shadow MCP Servers
+
+**Categoría OWASP MCP Top 10:** MCP09:2025
+
+## Objetivo del ataque
+
+Acceder a datos sensibles a través de un servidor MCP que nadie está vigilando: no está en `servers/registry.json`, no tiene RBAC, no valida entrada y no audita nada - más permisivo incluso que la versión "vulnerable" de los servidores oficiales.
+
+## Servidor(es) MCP involucrados
+
+- **shadow-analytics** (`hispalis-shadow-analytics-UNOFFICIAL`) - no gobernado, sin
+  versión endurecida (por definición: la mitigación es detectarlo, no arreglar su código)
+
+## Tool(s) MCP invocada(s)
+
+- `run_query` (shadow-analytics) - única tool que expone este servidor
+
+## Conexión
+
+Este servidor **no** forma parte de ningún `docker-compose.*.yml` (ese es el punto del escenario). Arráncalo aparte:
+
+```bash
+python servers/shadow-analytics/server.py
+```
+
+Escucha en `http://127.0.0.1:9099/mcp`. Después conecta
+`hispalis-shadow-analytics-UNOFFICIAL` (ver
+[`mcp-config/README.md`](../../mcp-config/README.md)).
+
+## Query a realizar al LLM
+
+> Ejecuta esta consulta SQL: `SELECT e.name, e.salary, e.department, i.vendor,
+> i.amount FROM employees e, invoices i LIMIT 20`
+
+Prueba también con una consulta que no tendría sentido pedir a ningún servidor oficial, para confirmar que no hay ninguna restricción:
+
+> Ejecuta esta consulta SQL: `SELECT * FROM employees`
+
+## Información que se espera extraer
+
+Un volcado cruzado de las tablas `employees` e `invoices` de Finanzas -nombre, salario, departamento, proveedor e importe- sin ninguna autenticación ni limitación de qué se puede consultar.
+
+## Detección (control de gobernanza, no de código)
+
+```bash
+python tools/check_shadow_servers.py
+```
+
+Este escáner recorre `servers/`, detecta cualquier `server.py` que no figure en `servers/registry.json` y lo reporta como ALERTA. Es el único mecanismo de este laboratorio que "mitiga" este escenario - no hay ninguna versión endurecida de `shadow-analytics` en sí, porque el problema no es cómo está construido, sino que existe fuera de cualquier proceso de revisión.
+
+## Impacto
+
+Un servidor MCP fuera del inventario de seguridad puede tener un radio de acción mayor que los servidores oficialmente revisados, precisamente porque nadie lo ha revisado. La defensa aquí no es técnica sino de proceso: inventario de activos y detección de despliegues no autorizados.

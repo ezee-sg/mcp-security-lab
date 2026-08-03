@@ -1,0 +1,23 @@
+---
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+admin:
+  hash: "$2y$12$K/SpwjtB.wOHJ/Nc6GVRDuc1ktLVi9zXNoZBHXgu/RmZTfF3EGWO2"
+  reserved: true
+  backend_roles:
+  - "admin"
+  description: "Admin de demo de Hispalis SIEM (password: SecretPassword, ver siem/README.md)"
+
+kibanaserver:
+  hash: "$2a$12$4AcgAt3xwOWadA5s5blL6ev39OXDNhmOesEoo33eZtrq2N0YrU3H."
+  reserved: true
+  description: "Usuario de servicio dashboard<->indexer"
+
+wazuh-wui:
+  hash: "$2y$12$3/3DWHkw9RUV/ku8doUfCei7WNKS2qzHIQMz0lp.HYqUpVEIvfmgW"
+  reserved: false
+  backend_roles:
+  - "admin"
+  description: "Usuario de servicio dashboard<->API de Wazuh"

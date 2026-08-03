@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Exfil Listener — Hispalis Technologies Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #121822;
+    --panel-border: #232d3b;
+    --text: #d7e0ea;
+    --muted: #7c8b9e;
+    --accent: #ff5d5d;
+    --accent-soft: rgba(255, 93, 93, 0.12);
+    --amber: #f5a623;
+    --amber-soft: rgba(245, 166, 35, 0.14);
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(1200px 600px at 20% -10%, #16202c 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+  }
+  header {
+    padding: 28px 32px 18px;
+    border-bottom: 1px solid var(--panel-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+  }
+  h1 .glyph { color: var(--accent); margin-right: 8px; }
+  .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+  .stats { display: flex; gap: 10px; align-items: center; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-family: var(--mono);
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+  }
+  .badge .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #2ecc71;
+    box-shadow: 0 0 8px #2ecc71;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  button {
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  main { padding: 24px 32px 60px; max-width: 1000px; margin: 0 auto; }
+  .empty {
+    margin-top: 60px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .empty code {
+    font-family: var(--mono);
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .event {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .event-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .event-head:hover { background: rgba(255,255,255,0.02); }
+  .event-index { color: var(--muted); font-family: var(--mono); font-size: 0.8rem; width: 2.5em; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .tag.backdoor { background: var(--accent-soft); color: var(--accent); }
+  .tag.exfil { background: var(--amber-soft); color: var(--amber); }
+  .event-time { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+  .event-ip { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+  .chevron { color: var(--muted); transition: transform 0.15s ease; }
+  .event.open .chevron { transform: rotate(90deg); }
+  pre.payload {
+    display: none;
+    margin: 0;
+    padding: 14px 16px 18px;
+    border-top: 1px solid var(--panel-border);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #a9c4e0;
+  }
+  .event.open pre.payload { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1><span class="glyph">&#9673;</span>Exfil Listener — Hispalis Technologies Lab</h1>
+    <div class="subtitle">Endpoint de recolección simulado (POST /collect). Cualquier dato que llegue aquí ha salido del laboratorio.</div>
+  </div>
+  <div class="stats">
+    <span class="badge"><span class="dot"></span><span id="count">0</span> eventos capturados</span>
+    <button id="clear-btn" type="button">Vaciar log</button>
+  </div>
+</header>
+<main>
+  <div id="empty" class="empty">
+    No hay eventos capturados todavia.<br>
+    Ejecuta cualquier escenario que exfiltre datos (p. ej. <code>scenarios/02_privilege_escalation_scope_creep</code>)
+    contra la version <strong>vulnerable</strong> y esta pagina se actualizara sola.
+  </div>
+  <div id="events"></div>
+</main>
+<script>
+  const eventsEl = document.getElementById('events');
+  const emptyEl = document.getElementById('empty');
+  const countEl = document.getElementById('count');
+  const openState = new Set();
+
+  function classify(payload) {
+    if (payload && typeof payload === 'object' && 'leaked_via' in payload) {
+      return {label: 'BACKDOOR: ' + String(payload.leaked_via), cls: 'backdoor'};
+    }
+    return {label: 'EXFILTRADO', cls: 'exfil'};
+  }
+
+  function formatTime(iso) {
+    try {
+      return new Date(iso).toLocaleString();
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  async function refresh() {
+    let data;
+    try {
+      const res = await fetch('/api/events');
+      data = await res.json();
+    } catch (e) {
+      return;
+    }
+
+    countEl.textContent = data.length;
+    emptyEl.style.display = data.length === 0 ? 'block' : 'none';
+    eventsEl.innerHTML = '';
+
+    data.forEach((entry, i) => {
+      const id = entry.timestamp + '#' + i;
+      const card = document.createElement('div');
+      card.className = 'event' + (openState.has(id) ? ' open' : '');
+
+      const head = document.createElement('div');
+      head.className = 'event-head';
+
+      const idx = document.createElement('span');
+      idx.className = 'event-index';
+      idx.textContent = '#' + (data.length - i);
+
+      const tagInfo = classify(entry.payload);
+      const tag = document.createElement('span');
+      tag.className = 'tag ' + tagInfo.cls;
+      tag.textContent = tagInfo.label;
+
+      const time = document.createElement('span');
+      time.className = 'event-time';
+      time.textContent = formatTime(entry.timestamp);
+
+      const ip = document.createElement('span');
+      ip.className = 'event-ip';
+      ip.textContent = 'origen: ' + (entry.source_ip || 'desconocido');
+
+      const chevron = document.createElement('span');
+      chevron.className = 'chevron';
+      chevron.textContent = '❯';
+
+      head.append(idx, tag, time, ip, chevron);
+      head.addEventListener('click', () => {
+        card.classList.toggle('open');
+        if (card.classList.contains('open')) openState.add(id); else openState.delete(id);
+      });
+
+      const pre = document.createElement('pre');
+      pre.className = 'payload';
+      pre.textContent = JSON.stringify(entry.payload, null, 2);
+
+      card.append(head, pre);
+      eventsEl.appendChild(card);
+    });
+  }
+
+  document.getElementById('clear-btn').addEventListener('click', async () => {
+    if (!confirm('Vaciar todos los eventos capturados?')) return;
+    await fetch('/api/events', {method: 'DELETE'});
+    openState.clear();
+    refresh();
+  });
+
+  refresh();
+  setInterval(refresh, 2000);
+</script>
+</body>
+</html>

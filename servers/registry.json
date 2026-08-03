@@ -1,0 +1,25 @@
+{
+  "description": "Inventario de servidores MCP aprobados y sometidos a revisión de seguridad para la organización Hispalis Technologies. Cualquier directorio bajo servers/ que no aparezca aquí se considera un Shadow MCP Server (OWASP MCP09:2025) — ver tools/check_shadow_servers.py.",
+  "approved_servers": [
+    {
+      "name": "rrhh",
+      "owner": "Departamento de RRHH",
+      "reviewed": true
+    },
+    {
+      "name": "finanzas",
+      "owner": "Departamento de Finanzas",
+      "reviewed": true
+    },
+    {
+      "name": "it",
+      "owner": "Departamento de IT",
+      "reviewed": true
+    },
+    {
+      "name": "direccion",
+      "owner": "Dirección General",
+      "reviewed": true
+    }
+  ]
+}

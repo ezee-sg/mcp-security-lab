@@ -1,0 +1,40 @@
+{
+  "servers": {
+    "hispalis-rrhh-vulnerable": {
+      "type": "http",
+      "url": "http://localhost:9001/mcp"
+    },
+    "hispalis-rrhh-hardened": {
+      "type": "http",
+      "url": "http://localhost:9011/mcp"
+    },
+    "hispalis-finanzas-vulnerable": {
+      "type": "http",
+      "url": "http://localhost:9002/mcp"
+    },
+    "hispalis-finanzas-hardened": {
+      "type": "http",
+      "url": "http://localhost:9012/mcp"
+    },
+    "hispalis-it-vulnerable": {
+      "type": "http",
+      "url": "http://localhost:9003/mcp"
+    },
+    "hispalis-it-hardened": {
+      "type": "http",
+      "url": "http://localhost:9013/mcp"
+    },
+    "hispalis-direccion-vulnerable": {
+      "type": "http",
+      "url": "http://localhost:9004/mcp"
+    },
+    "hispalis-direccion-hardened": {
+      "type": "http",
+      "url": "http://localhost:9014/mcp"
+    },
+    "hispalis-shadow-analytics-UNOFFICIAL": {
+      "type": "http",
+      "url": "http://localhost:9099/mcp"
+    }
+  }
+}

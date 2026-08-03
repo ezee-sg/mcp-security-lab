@@ -1,0 +1,15 @@
+<group name="hispalis,mcp,">
+  <rule id="100100" level="3">
+    <decoded_as>json</decoded_as>
+    <location>/var/log/hispalis/audit.log</location>
+    <description>Hispalis MCP: llamada a una tool auditada (tool=$(tool), rol=$(role)).</description>
+    <group>mcp_audit,</group>
+  </rule>
+
+  <rule id="100101" level="10">
+    <if_sid>100100</if_sid>
+    <field name="success">false</field>
+    <description>Hispalis MCP: acceso denegado a informacion restringida (tool=$(tool), rol=$(role)).</description>
+    <group>access_denied,mcp_rbac,</group>
+  </rule>
+</group>

@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.db
+*.bak
+.rugpull_active
+.dependency_tampered
+exfil-listener/collected.log
+logs/
+.venv/
+venv/
+siem/wazuh/certs/wazuh-indexer-certs/*.pem

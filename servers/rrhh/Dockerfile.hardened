@@ -1,0 +1,18 @@
+# Imagen del servidor MCP de RRHH — VERSIÓN ENDURECIDA.
+# Construir desde la raíz del repositorio: docker build -f servers/rrhh/Dockerfile.hardened .
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY common/ ./common/
+COPY servers/rrhh/ ./servers/rrhh/
+
+WORKDIR /app/servers/rrhh
+
+ENV MCP_HTTP_HOST=0.0.0.0
+ENV MCP_HTTP_PORT=9011
+EXPOSE 9011
+
+CMD ["python", "server_hardened.py"]

@@ -1,0 +1,9 @@
+# Configuración de conexión a bases de datos internas (fichero legítimo dentro de /configs)
+finanzas_db:
+  host: finanzas-svc.internal
+  user: svc_finanzas
+  password: "F1n4nz4s_2026!"
+it_db:
+  host: it-svc.internal
+  user: svc_it
+  password: "1T_Adm1n_2026!"

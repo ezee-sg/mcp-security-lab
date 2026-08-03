@@ -1,0 +1,74 @@
+{
+  "title": "Hispalis - Accesos indebidos (MCP RBAC)",
+  "uid": "hispalis-accesos-indebidos",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "timezone": "browser",
+  "time": { "from": "now-24h", "to": "now" },
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Accesos denegados (24h)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "elasticsearch", "uid": "wazuh-indexer" },
+      "targets": [
+        {
+          "query": "rule.id:100101",
+          "metrics": [{ "id": "1", "type": "count" }],
+          "bucketAggs": [{ "id": "2", "type": "date_histogram", "field": "timestamp", "settings": { "interval": "auto" } }],
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Accesos denegados por servidor MCP",
+      "type": "barchart",
+      "gridPos": { "h": 6, "w": 18, "x": 6, "y": 0 },
+      "datasource": { "type": "elasticsearch", "uid": "wazuh-indexer" },
+      "targets": [
+        {
+          "query": "rule.id:100101",
+          "metrics": [{ "id": "1", "type": "count" }],
+          "bucketAggs": [
+            { "id": "2", "type": "terms", "field": "data.tool", "settings": { "size": "10", "order": "desc", "orderBy": "_count" } }
+          ],
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Accesos denegados en el tiempo",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 },
+      "datasource": { "type": "elasticsearch", "uid": "wazuh-indexer" },
+      "targets": [
+        {
+          "query": "rule.id:100101",
+          "metrics": [{ "id": "1", "type": "count" }],
+          "bucketAggs": [{ "id": "2", "type": "date_histogram", "field": "timestamp", "settings": { "interval": "auto" } }],
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Ultimos accesos denegados",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 14 },
+      "datasource": { "type": "elasticsearch", "uid": "wazuh-indexer" },
+      "targets": [
+        {
+          "query": "rule.id:100101",
+          "metrics": [{ "id": "1", "type": "logs" }],
+          "bucketAggs": [],
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}
