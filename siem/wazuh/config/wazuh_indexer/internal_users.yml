@@ -4,19 +4,19 @@ _meta:
   config_version: 2
 
 admin:
-  hash: "$2y$12$K/SpwjtB.wOHJ/Nc6GVRDuc1ktLVi9zXNoZBHXgu/RmZTfF3EGWO2"
+  hash: "$2y$12$doLbDscs12I/sFZ3ZdUGX.2D93J2xd0gCxXmGVznYpj0EOZnreNFW"
   reserved: true
   backend_roles:
   - "admin"
   description: "Admin de demo de Hispalis SIEM (password: SecretPassword, ver siem/README.md)"
 
 kibanaserver:
-  hash: "$2a$12$4AcgAt3xwOWadA5s5blL6ev39OXDNhmOesEoo33eZtrq2N0YrU3H."
+  hash: "$2y$12$9TTac5doPpKYa80xClpGTuBeE6.OjJYceQc59g4HYHX1bD5CTeQVm"
   reserved: true
   description: "Usuario de servicio dashboard<->indexer"
 
 wazuh-wui:
-  hash: "$2y$12$3/3DWHkw9RUV/ku8doUfCei7WNKS2qzHIQMz0lp.HYqUpVEIvfmgW"
+  hash: "$2y$12$vyDKyEwe1o/0DmJoUXIoJepWlDJqRAex9zC8J5AnxGTRAwzZTeWcG"
   reserved: false
   backend_roles:
   - "admin"

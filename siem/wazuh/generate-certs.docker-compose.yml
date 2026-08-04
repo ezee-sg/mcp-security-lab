@@ -3,6 +3,6 @@ services:
     image: wazuh/wazuh-certs-generator:0.0.2
     hostname: wazuh-certs-generator
     volumes:
-      - ./certs/config.yml:/config/config.yml
+      - ./certs/config.yml:/config/certs.yml
       - ./certs/wazuh-indexer-certs:/certificates/
     entrypoint: sh -c "/entrypoint.sh"

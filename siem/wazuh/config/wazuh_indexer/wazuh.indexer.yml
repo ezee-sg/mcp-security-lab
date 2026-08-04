@@ -46,3 +46,9 @@ plugins.security.system_indices.indices:
 - ".plugins-ml-*"
 
 plugins.security.allow_default_init_securityindex: true
+
+# Hispalis Technologies: sin esto, el indexer se anuncia con su version real de OpenSearch
+# y el filebeat 7.10.2 empaquetado en wazuh-manager cree que habla con un Elasticsearch
+# antiguo, anadiendo "_type" a sus bulk requests -> 400 unknown parameter [_type].
+# Ver siem/README.md.
+compatibility.override_main_response_version: true

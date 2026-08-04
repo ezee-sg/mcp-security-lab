@@ -87,6 +87,12 @@ docker compose -f docker-compose.hardened.yml up -d --build
 
 Cada uno levanta sus 4 servidores (uno por departamento) y un `exfil-listener` propio en el puerto 8888. Es recomendable solo desplegar uno de los dos ya que si se levantan los dos ficheros a la vez, sus dos `exfil-listener` chocan en ese puerto (solo puede haber uno escuchando en 8888).
 
+`docker-compose.hardened.yml` incluye también el SIEM (Wazuh + Grafana, ver punto 7). **Antes de su primer `up`**, genera los certificados que esos servicios necesitan (si no, `wazuh.indexer` falla al arrancar con un error de montaje):
+
+```bash
+docker compose -f siem/wazuh/generate-certs.docker-compose.yml run --rm generator
+```
+
 ### 2. Conectar tu cliente MCP (Claude Desktop, VS Code, Cursor, Claude Code...)
 
 Con el laboratorio ya arrancado, ver [`mcp-config/README.md`](mcp-config/README.md): un fichero de configuración por cliente, con nombre descriptivo, todos apuntando por URL a los mismos puertos de `docker-compose.vulnerable.yml` / `docker-compose.hardened.yml`.
@@ -116,17 +122,12 @@ Escucha en `http://127.0.0.1:9099/mcp`. No tiene Dockerfile ni entrada en ningú
 
 Los escenarios **no son scripts**: se reproducen conversando con un cliente MCP real (Claude Desktop, VS Code, o directamente MCP Inspector) conectado a los servidores correspondientes, tal y como haría un usuario o un atacante en el mundo real.
 
-1. Asegúrate de que el fichero de compose que corresponda (`docker-compose.vulnerable.yml`
-   y/o `docker-compose.hardened.yml`) está arriba y de que el/los servidor(es) que indique el escenario están conectados en tu cliente (ver [`mcp-config/`](mcp-config/README.md)).
-2. Si el escenario lo requiere, obtén un `session_token` para probar la versión
-   endurecida:
+1. Asegúrate de que el fichero de compose que corresponda (`docker-compose.vulnerable.yml` y/o `docker-compose.hardened.yml`) está arriba y de que el/los servidor(es) que indique el escenario están conectados en tu cliente (ver [`mcp-config/`](mcp-config/README.md)).
+2. Si el escenario lo requiere, obtén un `session_token` para probar la versión endurecida:
    ```bash
    python tools/issue_token.py <usuario>   # p. ej. sofia.reyes, luis.perez...
    ```
-3. Abre `scenarios/NN_*/README.md` y sigue sus apartados: **Objetivo**, **Servidor(es)
-   MCP involucrados**, **Tool(s) MCP invocada(s)**, **Query a realizar al LLM** e
-   **Información que se espera extraer**. Pégale al asistente la query indicada (y
-   el `session_token`, si aplica) tal cual.
+3. Abre `scenarios/NN_*/README.md` y sigue sus apartados: **Objetivo**, **Servidor(es) MCP involucrados**, **Tool(s) MCP invocada(s)**, **Query a realizar al LLM** e **Información que se espera extraer**. Pégale al asistente la query indicada (y el `session_token`, si aplica) tal cual.
 
 Cuando un escenario necesita una preparación manual (envenenar una descripción, tamperear un fichero, crear un ticket malicioso), el propio README del escenario explica cómo proceder. 
 
