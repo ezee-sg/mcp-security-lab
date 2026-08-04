@@ -51,7 +51,7 @@ comandos... usando entrada no confiable sin validación adecuada". Este escenari
 
 > Usa la tool `read_config` con `path` igual a `../secrets/api_keys.txt`.
 >
-> Después, prueba también con `path` igual a `../../it.db`.
+> Después, prueba también con `path` igual a `../../it/it.db`.
 
 **Endurecida** (`python tools/issue_token.py elena.vidal`):
 
@@ -67,26 +67,8 @@ comandos... usando entrada no confiable sin validación adecuada". Este escenari
 - **Endurecida:** ambos se rechazan con `"Acceso a ruta no permitida."` -
   `os.path.realpath` resuelve la ruta y comprueba que siga dentro de `configs/`.
 
-> **Nota sobre despliegue con Docker:** el payload original de este escenario apuntaba a `../../finanzas/finanzas.db` (la base de datos de **otro** departamento) para demostrar que el Path Traversal podía cruzar fronteras organizativas. Eso solo funciona si ambos servidores comparten disco (ejecución nativa). Con `docker compose`, cada contenedor solo tiene copiada su propia carpeta (`servers/it/`, no `servers/finanzas/`), así que ese payload concreto devuelve simplemente "fichero no encontrado" - la contenedorización reduce por sí sola el radio de explosión de este ataque, aunque no sea su propósito. El payload `../../it.db` de arriba sí funciona igual en ambos casos, porque se queda dentro del propio contenedor/proceso de IT.
-
 ---
-
-## C) Bypass por encoding (demostración conceptual)
-
-Repite la parte A con este payload, que evade un filtro de blacklist ingenuo
-(`UNION SELECT` con comentarios SQL intercalados) pero **no** una defensa
-estructural:
-
-> Usa la tool `query_invoices` con `filter` igual exactamente a:
-> `' UN/**/ION SEL/**/ECT 1,name,salary,'paid','2026-01-01' FROM employees -- -`
-
-### Información que se espera extraer
-
-- **Vulnerable:** funciona igual que el payload sin ofuscar - no hay ningún filtro
-  que evadir.
-- **Endurecida:** sigue rechazado por el mismo motivo que en A: `Literal` de
-  Pydantic no reconoce patrones, así que la ofuscación no aporta nada.
 
 ## Impacto
 
-Extracción de datos de otros dominios funcionales (SQLi), lectura de ficheros arbitrarios del sistema incluyendo credenciales y bases de datos que el propio proceso puede alcanzar (Path Traversal - con Docker, acotado al contenedor; en ejecución nativa, potencialmente a todo el disco compartido), y evidencia de por qué las defensas por blacklist son insuficientes (encoding bypass).
+Extracción de datos de otros dominios funcionales (SQLi), lectura de ficheros arbitrarios del sistema incluyendo credenciales y bases de datos que el propio proceso puede alcanzar (Path Traversal).
