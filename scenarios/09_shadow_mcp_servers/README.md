@@ -8,8 +8,7 @@ Acceder a datos sensibles a través de un servidor MCP que nadie está vigilando
 
 ## Servidor(es) MCP involucrados
 
-- **shadow-analytics** (`hispalis-shadow-analytics-UNOFFICIAL`) - no gobernado, sin
-  versión endurecida (por definición: la mitigación es detectarlo, no arreglar su código)
+- **shadow-analytics** (`hispalis-shadow-analytics-UNOFFICIAL`) - no gobernado, sin versión endurecida (por definición: la mitigación es detectarlo, no arreglar su código)
 
 ## Tool(s) MCP invocada(s)
 
@@ -23,22 +22,22 @@ Este servidor **no** forma parte de ningún `docker-compose.*.yml` (ese es el pu
 python servers/shadow-analytics/server.py
 ```
 
-Escucha en `http://127.0.0.1:9099/mcp`. Después conecta
-`hispalis-shadow-analytics-UNOFFICIAL` (ver
-[`mcp-config/README.md`](../../mcp-config/README.md)).
+Cabe destacar que como este servidor no se lanza en el docker compose hay que inicializar la base de datos de finanzas con este comando en el terminal:
+
+```bash
+python servers/finanzas/database.py
+```
+
+Escucha en `http://127.0.0.1:9099/mcp`. Después conecta `hispalis-shadow-analytics-UNOFFICIAL` (ver [`mcp-config/README.md`](../../mcp-config/README.md)).
 
 ## Query a realizar al LLM
 
-> Ejecuta esta consulta SQL: `SELECT e.name, e.salary, e.department, i.vendor,
-> i.amount FROM employees e, invoices i LIMIT 20`
-
-Prueba también con una consulta que no tendría sentido pedir a ningún servidor oficial, para confirmar que no hay ninguna restricción:
-
+> Ejecuta esta consulta SQL: `SELECT * FROM invoices`
 > Ejecuta esta consulta SQL: `SELECT * FROM employees`
 
 ## Información que se espera extraer
 
-Un volcado cruzado de las tablas `employees` e `invoices` de Finanzas -nombre, salario, departamento, proveedor e importe- sin ninguna autenticación ni limitación de qué se puede consultar.
+Un volcado completo de las tablas `employees` e `invoices` de Finanzas sin ninguna autenticación ni limitación.
 
 ## Detección (control de gobernanza, no de código)
 

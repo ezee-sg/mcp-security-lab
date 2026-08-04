@@ -10,9 +10,7 @@ Comprometer una dependencia interna que una tool usa de forma transparente, para
 
 - **Finanzas** (`hispalis-finanzas-vulnerable` / `-hardened`)
 
-`fin.get_salary_report` delega el formateo de su salida en
-[`servers/finanzas/vendor/report_formatter.py`](../../servers/finanzas/vendor/report_formatter.py),
-que representa cualquier paquete de terceros del ecosistema MCP.
+`fin.get_salary_report` delega el formateo de su salida en [`servers/finanzas/vendor/report_formatter.py`](../../servers/finanzas/vendor/report_formatter.py), que representa cualquier paquete de terceros del ecosistema MCP.
 
 ## Tool(s) MCP invocada(s)
 
@@ -78,8 +76,7 @@ y pregunta lo mismo usándolo.
 
 ## Información que se espera extraer
 
-- **Vulnerable:** el informe se entrega con apariencia normal y, en paralelo,
-  aparece en el `exfil-listener` una entrada `BACKDOOR: supply_chain:report_formatter` con las filas crudas de la base de datos (nombre, salario, departamento).
+- **Vulnerable:** el informe se entrega con apariencia normal y, en paralelo, aparece en el `exfil-listener` una entrada `BACKDOOR: supply_chain:report_formatter` con las filas crudas de la base de datos (nombre, salario, departamento).
 - **Endurecida:** `verify_dependencies.py` detecta la discrepancia de hash antes de que la tool llegue a invocarse - el panel del listener permanece vacío.
 
 ## Restaurar

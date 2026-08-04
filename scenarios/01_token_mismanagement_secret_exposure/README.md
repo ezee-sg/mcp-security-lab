@@ -4,8 +4,7 @@
 
 ## Objetivo del ataque
 
-Obtener credenciales de sistemas internos sin necesidad de vulnerar ningún control
-de acceso (el problema no es *quién* puede leer el fichero, sino que el fichero contiene secretos en texto plano) y comprobar que los tokens de sesión de la versión endurecida son legibles por cualquiera que los intercepte, aunque estén firmados.
+Obtener credenciales de sistemas internos sin necesidad de vulnerar ningún control de acceso (el problema no es *quién* puede leer el fichero, sino que el fichero contiene secretos en texto plano) y comprobar que los tokens de sesión de la versión endurecida son legibles por cualquiera que los intercepte, aunque estén firmados.
 
 ## Servidor(es) MCP involucrados
 
@@ -35,17 +34,12 @@ Si el asistente no incluye el `session_token` en la llamada a la tool, pídeselo
 
 ## Información que se espera extraer
 
-- **Vulnerable:** el contenido íntegro de `database.yml`, incluyendo
-  `password: "F1n4nz4s_2026!"` y `password: "1T_Adm1n_2026!"` en texto plano.
-- **Endurecida:** el mismo fichero, pero con los valores de contraseña sustituidos
-  por `***REDACTED***` — aunque el usuario esté perfectamente autorizado a leer el
-  fichero.
+- **Vulnerable:** el contenido íntegro de `database.yml`, incluyendo `password: "F1n4nz4s_2026!"` y `password: "1T_Adm1n_2026!"` en texto plano.
+- **Endurecida:** el mismo fichero, pero con los valores de contraseña sustituidos por `***REDACTED***` — aunque el usuario esté perfectamente autorizado a leer el fichero.
 
 ## Inspección adicional (fuera del chat)
 
-El `session_token` que usa la versión endurecida es un JWT: está firmado, pero no
-cifrado. Cualquiera que capture uno (en una traza de red, un log mal configurado,
-etc.) puede leer sus datos sin conocer la clave de firma del servidor:
+El `session_token` que usa la versión endurecida es un JWT: está firmado, pero no cifrado. Cualquiera que capture uno (en una traza de red, un log mal configurado, etc.) puede leer sus datos sin conocer la clave de firma del servidor:
 
 ```bash
 python -c "import jwt,sys; sys.path.insert(0,'.'); from common.auth import issue_token; print(jwt.decode(issue_token('sofia.reyes'), options={'verify_signature': False}))"

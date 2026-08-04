@@ -51,16 +51,12 @@ python tools/issue_token.py ana.garcia   # employee -> solo puede ver su propia 
 Vuelve a contar las líneas de `logs/audit.log`:
 
 - **Tras la versión vulnerable:** el número de líneas **no cambia** — ninguna llamada, ni siquiera una potencialmente sensible, deja rastro alguno.
-- **Tras la versión endurecida:** el número de líneas **crece en 2** — una por
-  cada llamada, incluida la denegada (`ana.garcia` pidiendo la ficha de otro
-  empleado), que en la versión vulnerable habría pasado completamente
-  desapercibida. Abre el fichero y comprueba que cada línea es un JSON con
-  `timestamp`, `tool`, `role`, `params` (redactados) y `success`.
+- **Tras la versión endurecida:** el número de líneas **crece en 2** — una por cada llamada, incluida la denegada (`ana.garcia` pidiendo la ficha de otro empleado), que en la versión vulnerable habría pasado completamente desapercibida. Abre el fichero y comprueba que cada línea es un JSON con `timestamp`, `tool`, `role`, `params` (redactados) y `success`.
 
 ## Impacto
 
-Sin telemetría, un compromiso exitoso —o un intento fallido que debería disparar una alerta— es indistinguible de una operación normal: no hay forma de detectar el ataque a posteriori ni de alimentar un SIEM con esta información.
+Sin telemetría, un compromiso exitoso (o un intento fallido que debería disparar una alerta) es indistinguible de una operación normal: no hay forma de detectar el ataque a posteriori ni de alimentar un SIEM con esta información.
 
 ## Un paso más allá: SIEM real (opcional)
 
-`logs/audit.log` es un fichero plano — útil para esta comprobación manual, pero no es "trazabilidad" en el sentido operativo del término. El add-on [`siem/`](../../siem/README.md) (Wazuh + Grafana, opcional sobre `docker-compose.hardened.yml`) convierte cada línea con `"success": false` en una alerta real, visible en un dashboard, en vez de en una línea más de un fichero que nadie está mirando.
+`logs/audit.log` es un fichero plano - útil para esta comprobación manual, pero no es "trazabilidad" en el sentido operativo del término. El add-on [`siem/`](../../siem/README.md) (Wazuh + Grafana, opcional sobre `docker-compose.hardened.yml`) convierte cada línea con `"success": false` en una alerta real, visible en un dashboard, en vez de en una línea más de un fichero que nadie está mirando.

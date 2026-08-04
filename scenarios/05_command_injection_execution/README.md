@@ -35,11 +35,8 @@ comandos... usando entrada no confiable sin validación adecuada". Este escenari
 
 ### Información que se espera extraer
 
-- **Vulnerable:** la respuesta incluye filas de la tabla `employees` (nombre,
-  salario) camufladas como si fueran facturas.
-- **Endurecida:** error de validación de esquema - `filter.status` solo admite
-  `"paid"`, `"pending"` u `"overdue"` (`Literal` de Pydantic); la consulta nunca
-  llega a ejecutarse.
+- **Vulnerable:** la respuesta incluye filas de la tabla `employees` (nombre, salario) camufladas como si fueran facturas.
+- **Endurecida:** error de validación de esquema - `filter.status` solo admite `"paid"`, `"pending"` u `"overdue"` (`Literal` de Pydantic); la consulta nunca llega a ejecutarse.
 
 ---
 
@@ -60,12 +57,8 @@ comandos... usando entrada no confiable sin validación adecuada". Este escenari
 
 ### Información que se espera extraer
 
-- **Vulnerable:** el primer payload devuelve credenciales AWS/SMTP falsas de
-  `servers/it/secrets/api_keys.txt`; el segundo devuelve el contenido binario de
-  `servers/it/it.db` (la propia base de datos de tickets del servidor de IT) -
-  ninguno de los dos debería ser accesible a través de `read_config`.
-- **Endurecida:** ambos se rechazan con `"Acceso a ruta no permitida."` -
-  `os.path.realpath` resuelve la ruta y comprueba que siga dentro de `configs/`.
+- **Vulnerable:** el primer payload devuelve credenciales AWS/SMTP falsas de `servers/it/secrets/api_keys.txt`; el segundo devuelve el contenido binario de `servers/it/it.db` (la propia base de datos de tickets del servidor de IT) - ninguno de los dos debería ser accesible a través de `read_config`.
+- **Endurecida:** ambos se rechazan con `"Acceso a ruta no permitida."` - `os.path.realpath` resuelve la ruta y comprueba que siga dentro de `configs/`.
 
 ---
 

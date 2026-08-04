@@ -41,14 +41,8 @@ Versión endurecida (`python tools/issue_token.py carlos.soto`):
 
 ## Información que se espera extraer
 
-- **Vulnerable:** en la Sesión 2, Carlos Soto recibe el informe **completo** que
-  generó Sofía Reyes segundos antes, sin haberlo solicitado él mismo - la caché es
-  una estructura global del proceso, compartida por todos los usuarios.
-- **Endurecida:** en la Sesión 2, Carlos Soto recibe
-  `"No tienes ningun informe cacheado en esta sesion."` - la caché está indexada
-  por el `sub` del propio token (`common.session.SessionContext`), así que solo
-  ve lo que él mismo generó, aunque su rol esté perfectamente autorizado a usar la
-  tool.
+- **Vulnerable:** en la Sesión 2, Carlos Soto recibe el informe **completo** que generó Sofía Reyes segundos antes sin haberlo solicitado él mismo - la caché es una estructura global del proceso, compartida por todos los usuarios.
+- **Endurecida:** en la Sesión 2, Carlos Soto recibe `"No tienes ningun informe cacheado en esta sesion."` - la caché está indexada por el `sub` del propio token (`common.session.SessionContext`), así que solo ve lo que él mismo generó, aunque su rol esté perfectamente autorizado a usar la tool.
 
 ## Impacto
 

@@ -51,11 +51,8 @@ herramientas del cliente (o pídele al asistente "¿qué hace la herramienta get
 
 ### Información que se espera extraer
 
-- **Vulnerable:** la respuesta incluye la ficha de Ana García **y**, sin que lo
-  hayas pedido, el contenido de los documentos estratégicos confidenciales de
-  Dirección (planes de expansión, actas del consejo...).
-- **Endurecida:** `dir.get_strategic_documents` exige rol `director`; aunque el
-  modelo intente la llamada inyectada, el servidor de Dirección la rechaza si usas un `session_token` de otro rol (prueba con `python tools/issue_token.py luis.perez`).
+- **Vulnerable:** la respuesta incluye la ficha de Ana García **y**, sin que lo hayas pedido, el contenido de los documentos estratégicos confidenciales de Dirección (planes de expansión, actas del consejo...).
+- **Endurecida:** `dir.get_strategic_documents` exige rol `director`; aunque el modelo intente la llamada inyectada, el servidor de Dirección la rechaza si usas un `session_token` de otro rol (prueba con `python tools/issue_token.py luis.perez`).
 
 ### Restaurar
 
@@ -101,14 +98,8 @@ No hace falta reiniciar el servidor: el fichero se comprueba en cada llamada, no
 El `exfil-listener` ya está arrancado junto con el fichero de compose que uses,
 en `http://localhost:8888`:
 
-- **Vulnerable:** la notificación "legítima" se envía con normalidad y, en
-  paralelo, aparece una entrada `BACKDOOR: rug_pull:it.send_notification` en el
-  panel del listener con una copia de los parámetros enviados.
-- **Endurecida:** la whitelist de destinos bloquea cualquier envío real fuera de
-  `@hispalis.tech`/`127.0.0.1:9000`, así que el "gancho" oculto no llega a
-  ejecutarse contra un host externo; en su lugar, `logs/audit.log` registra una
-  entrada de ALERTA señalando que el comportamiento de la tool difiere del
-  verificado.
+- **Vulnerable:** la notificación "legítima" se envía con normalidad y, en paralelo, aparece una entrada `BACKDOOR: rug_pull:it.send_notification` en el panel del listener con una copia de los parámetros enviados.
+- **Endurecida:** la whitelist de destinos bloquea cualquier envío real fuera de `@hispalis.tech`/`127.0.0.1:9000`, así que el "gancho" oculto no llega a ejecutarse contra un host externo; en su lugar, `logs/audit.log` registra una entrada de ALERTA señalando que el comportamiento de la tool difiere del verificado.
 
 ### Restaurar
 

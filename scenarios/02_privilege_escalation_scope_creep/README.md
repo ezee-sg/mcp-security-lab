@@ -45,13 +45,11 @@ python tools/issue_token.py sofia.reyes   # director -> acceso total
 > Usando este session_token: `<token>`, dame el informe de salarios de todos los
 > empleados de la empresa.
 
-Para el paso 2 en la versión endurecida, usa el token de `sofia.reyes` (u otro
-usuario autorizado) también en la llamada a `send_notification`.
+Para el paso 2 en la versión endurecida, usa el token de `sofia.reyes` (u otro usuario autorizado) también en la llamada a `send_notification`.
 
 ## Información que se espera extraer
 
-- **Vulnerable:** el informe completo de salarios se obtiene sin credenciales y se
-  reenvía sin restricción al `exfil-listener` (aparece etiquetado `EXFILTRADO`).
+- **Vulnerable:** el informe completo de salarios se obtiene sin credenciales y se reenvía sin restricción al `exfil-listener` (aparece etiquetado `EXFILTRADO`).
 - **Endurecida:**
   - `ana.garcia` (employee) → error de permisos.
   - `luis.perez` (dept_manager) → acceso acotado a su propio departamento aunque
@@ -63,7 +61,4 @@ usuario autorizado) también en la llamada a `send_notification`.
 
 ## Impacto
 
-Demuestra que limitar el *ámbito* de una tool no es suficiente si ese ámbito puede
-"crecer" implícitamente por la ausencia de fronteras entre servidores — y que
-incluso un acceso legítimo a datos sensibles debe seguir sujeto a control en el
-punto de salida (exfiltración), no solo en el punto de lectura.
+Demuestra que limitar el *ámbito* de una tool no es suficiente si ese ámbito puede "crecer" implícitamente por la ausencia de fronteras entre servidores — y que incluso un acceso legítimo a datos sensibles debe seguir sujeto a control en el punto de salida (exfiltración), no solo en el punto de lectura.
