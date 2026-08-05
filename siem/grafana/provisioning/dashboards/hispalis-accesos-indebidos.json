@@ -1,5 +1,5 @@
 {
-  "title": "Hispalis - Accesos indebidos (MCP RBAC)",
+  "title": "Hispalis - Alertas de seguridad MCP",
   "uid": "hispalis-accesos-indebidos",
   "schemaVersion": 39,
   "version": 1,
@@ -64,6 +64,36 @@
       "targets": [
         {
           "query": "rule.id:100101",
+          "metrics": [{ "id": "1", "type": "logs" }],
+          "bucketAggs": [],
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Shadow MCP Servers detectados (24h)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 24 },
+      "datasource": { "type": "elasticsearch", "uid": "wazuh-indexer" },
+      "targets": [
+        {
+          "query": "rule.id:100102",
+          "metrics": [{ "id": "1", "type": "count" }],
+          "bucketAggs": [{ "id": "2", "type": "date_histogram", "field": "timestamp", "settings": { "interval": "auto" } }],
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Ultimas alertas de Shadow MCP Servers",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 18, "x": 6, "y": 24 },
+      "datasource": { "type": "elasticsearch", "uid": "wazuh-indexer" },
+      "targets": [
+        {
+          "query": "rule.id:100102",
           "metrics": [{ "id": "1", "type": "logs" }],
           "bucketAggs": [],
           "refId": "A"

@@ -22,19 +22,22 @@ Wazuh **no** habla con los servidores MCP ni con exfil-listener: solo lee `logs/
 
 ## Alertas
 
-`siem/wazuh/config/wazuh_cluster/local_rules.xml` define dos reglas:
+`siem/wazuh/config/wazuh_cluster/local_rules.xml` define tres reglas:
 
 - **`100100`** (nivel 3): dispara con cualquier línea de `audit.log` — solo sirve de regla padre.
 - **`100101`** (nivel 10, grupo `access_denied`): dispara cuando, además, el campo `success` es `false`, es decir, toda vez que `require_role()` (`common/auth.py`) deniega una llamada por falta de permisos.
+- **`100102`** (nivel 12, grupo `shadow_mcp_server`): dispara cuando el campo `event` es `shadow_server_detected`, es decir, cuando `tools/check_shadow_servers.py` encuentra un `server.py` que no figura en `servers/registry.json` (MCP09:2025) — ver [scenarios/09_shadow_mcp_servers](../scenarios/09_shadow_mcp_servers/README.md).
 
-El panel de Grafana filtra únicamente por `rule.id:100101` — solo enseña accesos denegados, nunca tráfico normal:
+El panel de Grafana **"Hispalis - Alertas de seguridad MCP"** filtra por estas reglas — nunca enseña tráfico normal:
 
-| Panel | Qué muestra |
-|---|---|
-| Accesos denegados (24h) | Contador total |
-| Accesos denegados por servidor MCP | Barras por `data.tool` (qué tool recibe más denegaciones) |
-| Accesos denegados en el tiempo | Serie temporal |
-| Últimos accesos denegados | Tabla con el detalle crudo de cada evento |
+| Panel | Regla | Qué muestra |
+|---|---|---|
+| Accesos denegados (24h) | `100101` | Contador total |
+| Accesos denegados por servidor MCP | `100101` | Barras por `data.tool` (qué tool recibe más denegaciones) |
+| Accesos denegados en el tiempo | `100101` | Serie temporal |
+| Últimos accesos denegados | `100101` | Tabla con el detalle crudo de cada evento |
+| Shadow MCP Servers detectados (24h) | `100102` | Contador total |
+| Últimas alertas de Shadow MCP Servers | `100102` | Tabla con el detalle crudo de cada evento |
 
 Se refresca cada 30s, ventana de las últimas 24h por defecto.
 

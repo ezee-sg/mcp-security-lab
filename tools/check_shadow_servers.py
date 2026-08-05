@@ -3,11 +3,13 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SERVERS_DIR = REPO_ROOT / "servers"
 REGISTRY_PATH = SERVERS_DIR / "registry.json"
+AUDIT_LOG_PATH = REPO_ROOT / "logs" / "audit.log"
 
 def discover_server_dirs() -> list[str]:
     return sorted(
@@ -19,6 +21,17 @@ def discover_server_dirs() -> list[str]:
 def load_approved_names() -> set[str]:
     registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     return {entry["name"] for entry in registry["approved_servers"]}
+
+def log_shadow_server(name: str) -> None:
+    """Registra el hallazgo en logs/audit.log, para que el SIEM lo recoja."""
+    entry = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "event": "shadow_server_detected",
+        "server": name,
+    }
+    AUDIT_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with AUDIT_LOG_PATH.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 def main() -> int:
     discovered = discover_server_dirs()
@@ -33,6 +46,7 @@ def main() -> int:
         print("\nALERTA: se han detectado Shadow MCP Servers (OWASP MCP09:2025):")
         for name in shadow:
             print(f"  - servers/{name}/server.py NO figura en servers/registry.json")
+            log_shadow_server(name)
         return 1
 
     print("\nOK: todos los servidores MCP presentes están registrados y aprobados.")
