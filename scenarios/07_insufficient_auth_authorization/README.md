@@ -63,8 +63,7 @@ python -c "import jwt,time; print(jwt.encode({'sub':'atacante','role':'director'
 
 ### Información que se espera extraer
 
-`common.auth.verify_and_decode_token` falla la verificación de firma
-(`InvalidSignatureError`) → la llamada se rechaza.
+`common.auth.verify_and_decode_token` falla la verificación de firma (`InvalidSignatureError`) → la llamada se rechaza.
 
 ---
 

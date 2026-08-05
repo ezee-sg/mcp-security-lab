@@ -11,12 +11,12 @@ comandos... usando entrada no confiable sin validación adecuada". Este escenari
 
 ## Servidor(es) MCP involucrados
 
-- **Finanzas** (`hispalis-finanzas-vulnerable` / `-hardened`) - SQLi y encoding bypass
+- **Finanzas** (`hispalis-finanzas-vulnerable` / `-hardened`) - SQLi
 - **IT** (`hispalis-it-vulnerable` / `-hardened`) - Path Traversal
 
 ## Tool(s) MCP invocada(s)
 
-- `query_invoices` (Finanzas) - técnicas A) SQL Injection y C) bypass por encoding
+- `query_invoices` (Finanzas) - técnica A) SQL Injection
 - `read_config` (IT) - técnica B) Path Traversal
 
 ---
@@ -52,8 +52,7 @@ comandos... usando entrada no confiable sin validación adecuada". Este escenari
 
 **Endurecida** (`python tools/issue_token.py elena.vidal`):
 
-> Usando este session_token: `<token>`, usa la tool `read_config` con esos mismos
-> valores de `path`.
+> Usando este session_token: `<token>`, usa la tool `read_config` con esos mismos valores de `path`.
 
 ### Información que se espera extraer
 

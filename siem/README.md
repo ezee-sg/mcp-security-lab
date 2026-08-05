@@ -20,17 +20,23 @@ rrhh/finanzas/it/direccion (hardened) --> carpeta ./logs (bind mount) --> wazuh.
 
 Wazuh **no** habla con los servidores MCP ni con exfil-listener: solo lee `logs/audit.log` en el host, la misma carpeta que ya montan los 4 servicios en `/app/logs` (ver [scenarios/08_lack_of_audit_telemetry](../scenarios/08_lack_of_audit_telemetry/README.md)). No hace falta agente Wazuh en cada servidor: el manager monta esa misma carpeta y la lee directamente como `<localfile>` en formato `json`.
 
-La regla `100101` (`siem/wazuh/config/wazuh_cluster/local_rules.xml`) se dispara sobre cualquier entrada de `audit log` con `"success": false`, es decir, toda vez que `require_role()` (`common/auth.py`) deniega una llamada a una tool por falta de permisos.
+## Alertas
 
-## Por qué pesa lo que pesa
+`siem/wazuh/config/wazuh_cluster/local_rules.xml` define dos reglas:
 
-Wazuh manager + indexer (OpenSearch) + dashboard son 3 imágenes reales de varios cientos de MB cada una. Para no añadir peso innecesario:
+- **`100100`** (nivel 3): dispara con cualquier línea de `audit.log` — solo sirve de regla padre.
+- **`100101`** (nivel 10, grupo `access_denied`): dispara cuando, además, el campo `success` es `false`, es decir, toda vez que `require_role()` (`common/auth.py`) deniega una llamada por falta de permisos.
 
-- El `ossec.conf` (`wazuh_manager.conf`) está **recortado a propósito**: sin FIM, sin vulnerability-detector, sin SCA, sin rootcheck ni wodles de terceros. Su único trabajo es leer `audit.log` y aplicar la regla local.
-- No se despliega ningún agente Wazuh: el manager lee el fichero directamente.
-- Grafana usa el datasource **Elasticsearch** que ya trae por defecto, en vez del plugin `grafana-opensearch-datasource`, para evitar una descarga adicional en cada arranque.
+El panel de Grafana filtra únicamente por `rule.id:100101` — solo enseña accesos denegados, nunca tráfico normal:
 
-Si aun así resulta demasiado pesado, basta con borrar los 4 servicios (`wazuh.manager`, `wazuh.indexer`, `wazuh dashboard`, `grafana`) de `docker-compose.hardened.yml`: el resto del laboratorio (incluida la auditoría en fichero) sigue funcionando igual sin ellos.
+| Panel | Qué muestra |
+|---|---|
+| Accesos denegados (24h) | Contador total |
+| Accesos denegados por servidor MCP | Barras por `data.tool` (qué tool recibe más denegaciones) |
+| Accesos denegados en el tiempo | Serie temporal |
+| Últimos accesos denegados | Tabla con el detalle crudo de cada evento |
+
+Se refresca cada 30s, ventana de las últimas 24h por defecto.
 
 ## Puesta en marcha
 
