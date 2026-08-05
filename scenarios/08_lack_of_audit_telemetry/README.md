@@ -16,7 +16,7 @@ No es un ataque en sí mismo, sino la comprobación de una propiedad transversal
 
 ## Preparación
 
-Antes de empezar, comprueba cuántas líneas tiene `logs/audit.log` (puede que ni exista todavía):
+Antes de empezar, se comprueba cuántas líneas tiene `logs/audit.log` (puede que ni exista todavía):
 
 ```bash
 wc -l logs/audit.log   # git-bash / Linux / macOS
@@ -33,7 +33,7 @@ wc -l logs/audit.log   # git-bash / Linux / macOS
 >
 > Ahora dame la ficha del empleado con ID 7.
 
-**Contra la versión endurecida** — repite lo mismo, primero con un token que debería tener éxito y luego con uno que debería ser denegado:
+**Contra la versión endurecida** — se repite lo mismo, primero con un token que debería tener éxito y luego con uno que debería ser denegado:
 
 ```bash
 python tools/issue_token.py luis.perez   # dept_manager -> deberia funcionar
@@ -48,15 +48,15 @@ python tools/issue_token.py ana.garcia   # employee -> solo puede ver su propia 
 
 ## Información que se espera extraer
 
-Vuelve a contar las líneas de `logs/audit.log`:
+Se vuelven a contar las líneas de `logs/audit.log`:
 
 - **Tras la versión vulnerable:** el número de líneas **no cambia** — ninguna llamada, ni siquiera una potencialmente sensible, deja rastro alguno.
-- **Tras la versión endurecida:** el número de líneas **crece en 2** — una por cada llamada, incluida la denegada (`ana.garcia` pidiendo la ficha de otro empleado), que en la versión vulnerable habría pasado completamente desapercibida. Abre el fichero y comprueba que cada línea es un JSON con `timestamp`, `tool`, `role`, `params` (redactados) y `success`.
+- **Tras la versión endurecida:** el número de líneas **crece en 2** — una por cada llamada, incluida la denegada (`ana.garcia` pidiendo la ficha de otro empleado), que en la versión vulnerable habría pasado completamente desapercibida. Al abrir el fichero puede comprobarse que cada línea es un JSON con `timestamp`, `tool`, `role`, `params` (redactados) y `success`.
 
 ## Impacto
 
 Sin telemetría, un compromiso exitoso (o un intento fallido que debería disparar una alerta) es indistinguible de una operación normal: no hay forma de detectar el ataque a posteriori ni de alimentar un SIEM con esta información.
 
-## Un paso más allá: SIEM real (opcional)
+## Trazabilidad real: SIEM (Wazuh + Grafana)
 
-`logs/audit.log` es un fichero plano - útil para esta comprobación manual, pero no es "trazabilidad" en el sentido operativo del término. El add-on [`siem/`](../../siem/README.md) (Wazuh + Grafana, opcional sobre `docker-compose.hardened.yml`) convierte cada línea con `"success": false` en una alerta real, visible en un dashboard, en vez de en una línea más de un fichero que nadie está mirando.
+`logs/audit.log` es un fichero plano - útil para esta comprobación manual, pero no es "trazabilidad" en el sentido operativo del término. El SIEM [`siem/`](../../siem/README.md) (Wazuh + Grafana, parte de `docker-compose.hardened.yml`) convierte cada línea con `"success": false` en una alerta real, visible en un dashboard, en vez de en una línea más de un fichero que nadie está mirando.

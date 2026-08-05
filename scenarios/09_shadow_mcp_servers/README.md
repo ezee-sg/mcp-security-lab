@@ -16,7 +16,7 @@ Acceder a datos sensibles a través de un servidor MCP que nadie está vigilando
 
 ## Conexión
 
-Este servidor **no** forma parte de ningún `docker-compose.*.yml` (ese es el punto del escenario). Arráncalo aparte:
+Este servidor **no** forma parte de ningún `docker-compose.*.yml` (ese es el punto del escenario). Se arranca aparte:
 
 ```bash
 python servers/shadow-analytics/server.py
@@ -28,7 +28,7 @@ Cabe destacar que como este servidor no se lanza en el docker compose hay que in
 python servers/finanzas/database.py
 ```
 
-Escucha en `http://127.0.0.1:9099/mcp`. Después conecta `hispalis-shadow-analytics-UNOFFICIAL` (ver [`mcp-config/README.md`](../../mcp-config/README.md)).
+Escucha en `http://127.0.0.1:9099/mcp`. Después se conecta `hispalis-shadow-analytics-UNOFFICIAL` (ver [`mcp-config/README.md`](../../mcp-config/README.md)).
 
 ## Query a realizar al LLM
 

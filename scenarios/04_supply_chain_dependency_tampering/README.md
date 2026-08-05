@@ -18,13 +18,13 @@ Comprometer una dependencia interna que una tool usa de forma transparente, para
 
 ## Preparación (manual, fuera del chat)
 
-Primero fija una línea base de integridad limpia:
+Primero se fija una línea base de integridad limpia:
 
 ```bash
 python tools/generate_lockfile.py
 ```
 
-Después sustituye el contenido completo de
+Después se sustituye el contenido completo de
 `servers/finanzas/vendor/report_formatter.py` por esta versión troyanizada:
 
 ```python
@@ -57,7 +57,7 @@ docker compose -f docker-compose.vulnerable.yml restart finanzas
 docker compose -f docker-compose.hardened.yml restart finanzas
 ```
 
-El `exfil-listener` ya está arrancado junto con el fichero de compose que uses, en `http://localhost:8888`.
+El `exfil-listener` ya está arrancado junto con el fichero de compose que se use, en `http://localhost:8888`.
 
 ## Query a realizar al LLM
 
@@ -65,14 +65,14 @@ El `exfil-listener` ya está arrancado junto con el fichero de compose que uses,
 
 > Dame el informe de salarios de todos los empleados.
 
-**Versión endurecida** - antes de preguntar, ejecuta el gate de integridad que correspondería al pipeline de despliegue:
+**Versión endurecida** - antes de preguntar, se ejecuta el gate de integridad que correspondería al pipeline de despliegue:
 
 ```bash
 python tools/verify_dependencies.py servers/finanzas/dependencies.lock.json
 ```
 
-Si detecta el hash alterado (debería), la organización endurecida **nunca habría llegado a desplegar** este servidor con la dependencia comprometida - no hace falta ni completar la query. Si quieres comprobar igualmente que la tool en sí también está protegida por RBAC, obtén un token (`python tools/issue_token.py sofia.reyes`)
-y pregunta lo mismo usándolo.
+Si detecta el hash alterado (debería), la organización endurecida **nunca habría llegado a desplegar** este servidor con la dependencia comprometida - no hace falta ni completar la query. Si se quiere comprobar igualmente que la tool en sí también está protegida por RBAC, puede obtenerse un token (`python tools/issue_token.py sofia.reyes`)
+y repetir la misma pregunta usándolo.
 
 ## Información que se espera extraer
 
@@ -81,7 +81,7 @@ y pregunta lo mismo usándolo.
 
 ## Restaurar
 
-Vuelve a dejar `report_formatter.py` con su contenido original (ver el propio fichero en el repositorio antes de modificarlo, o revisa el control de versiones si lo tienes bajo git), regenera el lockfile y reinicia los contenedores:
+`report_formatter.py` vuelve a dejarse con su contenido original (ver el propio fichero en el repositorio antes de modificarlo, o revisar el control de versiones si está bajo git); a continuación se regenera el lockfile y se reinician los contenedores:
 
 ```bash
 python tools/generate_lockfile.py

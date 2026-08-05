@@ -20,7 +20,7 @@ Obtener credenciales de sistemas internos sin necesidad de vulnerar ningún cont
 
 > Lee el fichero de configuración `database.yml` del servidor de IT y dime qué contiene.
 
-**Versión endurecida:** primero obtén un token con rol autorizado
+**Versión endurecida:** primero es necesario obtener un token con rol autorizado
 (`dept_manager`, `it_admin` o `director`):
 
 ```bash
@@ -30,7 +30,7 @@ python tools/issue_token.py elena.vidal
 > Usando este session_token: `<pegar el token devuelto>`, lee el fichero de
 > configuración `database.yml`.
 
-Si el asistente no incluye el `session_token` en la llamada a la tool, pídeselo explícitamente ("llama a la tool read_config con path='database.yml' y session_token='...'") o usa **MCP Inspector** para invocar `read_config` directamente con ambos parámetros en su formulario.
+Si el asistente no incluye el `session_token` en la llamada a la tool, conviene pedírselo explícitamente ("llama a la tool read_config con path='database.yml' y session_token='...'") o utilizar **MCP Inspector** para invocar `read_config` directamente con ambos parámetros en su formulario.
 
 ## Información que se espera extraer
 

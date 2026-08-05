@@ -25,7 +25,7 @@ Los 4 servidores departamentales; en particular **Finanzas** y **Dirección** pa
 
 > ¿Qué herramientas tienes disponibles en el servidor de Finanzas? Descríbeme también sus parámetros.
 
-O, más directo: abre el panel de herramientas del propio cliente (en Claude Desktop, el icono de conectores/herramientas; en VS Code, `.vscode/mcp.json` o la paleta de comandos *MCP: List Servers*) - no hace falta ni preguntar nada, la lista de tools ya es visible sin haber presentado ningún `session_token`.
+O, más directo: se abre el panel de herramientas del propio cliente (en Claude Desktop, el icono de conectores/herramientas; en VS Code, `.vscode/mcp.json` o la paleta de comandos *MCP: List Servers*) - no hace falta ni preguntar nada, la lista de tools ya es visible sin haber presentado ningún `session_token`.
 
 ### Información que se espera extraer
 
@@ -49,7 +49,7 @@ El asistente no puede completar la llamada: `session_token` es un parámetro obl
 
 ## C) Token forjado
 
-Genera un token firmado con una clave que **no** es la del servidor (simula a un atacante que no conoce el secreto real):
+Se genera un token firmado con una clave que **no** es la del servidor (esto simula a un atacante que no conoce el secreto real):
 
 ```bash
 python -c "import jwt,time; print(jwt.encode({'sub':'atacante','role':'director','department':'direccion','iat':int(time.time()),'exp':int(time.time())+3600}, 'clave-adivinada-por-el-atacante', algorithm='HS256'))"

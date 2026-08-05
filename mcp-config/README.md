@@ -24,7 +24,7 @@ Todos registran los 4 servidores departamentales (versión **vulnerable** y
 ##  MCP Inspector
 
 A diferencia de los otros cuatro, Inspector no lee ningún fichero de configuración:
-es una UI web en la que pegas la URL manualmente, servidor a servidor. Es también
+es una UI web en la que se pega la URL manualmente, servidor a servidor. Es también
 la forma más fiable de invocar una tool con un payload exacto sin depender de que
 un asistente lo transcriba bien. Pasos para ejecutarlo:
 
@@ -32,14 +32,14 @@ un asistente lo transcriba bien. Pasos para ejecutarlo:
    ```bash
    npx @modelcontextprotocol/inspector
    ```
-2. Abre en el navegador la URL que imprime la terminal (normalmente
+2. Se abre en el navegador la URL que imprime la terminal (normalmente
    `http://localhost:6274`, con un token de sesión incluido en versiones recientes). Cabe destacar que es probable que la página se abra sola.
 3. En el formulario de conexión:
-   - **Transport Type:** cámbialo explícitamente a `Streamable HTTP`.
+   - **Transport Type:** debe cambiarse explícitamente a `Streamable HTTP`.
    - **URL:** la del servidor que se quiera probar. Por ejemplo:
      `http://localhost:9002/mcp` (Finanzas vulnerable) — con la `/mcp` incluida.
    - Cabeceras vacías: ninguno de nuestros servidores exige autenticación a nivel
      de transporte.
-4. Pulsa **Connect**. Con el fichero de compose correspondiente arrancado verás las pestañas **Tools / Resources / Prompts**.
-5. En **Tools**, elige la tool, rellena el formulario de parámetros con el payload exacto del escenario y pulsa **Run Tool**. Para probar la versión endurecida, añade `session_token` como parámetro más, con el valor de `python tools/issue_token.py <usuario>`.
+4. Al pulsar **Connect**, con el fichero de compose correspondiente arrancado, aparecen las pestañas **Tools / Resources / Prompts**.
+5. En **Tools**, se elige la tool, se rellena el formulario de parámetros con el payload exacto del escenario y se pulsa **Run Tool**. Para probar la versión endurecida, se añade `session_token` como parámetro adicional, con el valor de `python tools/issue_token.py <usuario>`.
 

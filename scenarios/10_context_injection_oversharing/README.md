@@ -4,7 +4,7 @@
 
 ## Objetivo del ataque
 
-Conseguir datos generados por otro usuario sin haberlos pedido tú mismo, a través de una caché de resultados que no distingue quién la llenó.
+Conseguir datos generados por otro usuario sin haberlos solicitado directamente, a través de una caché de resultados que no distingue quién la llenó.
 
 ## Servidor(es) MCP involucrados
 
@@ -17,7 +17,7 @@ Conseguir datos generados por otro usuario sin haberlos pedido tú mismo, a trav
 
 ## Query a realizar al LLM
 
-Necesitas **dos conversaciones/sesiones distintas** con el mismo servidor (dos ventanas o dos chats separados del cliente), simulando a dos usuarios distintos.
+Son necesarias **dos conversaciones/sesiones distintas** con el mismo servidor (dos ventanas o dos chats separados del cliente), simulando a dos usuarios distintos.
 
 **Sesión 1 (Sofía Reyes, directora) - genera el informe:**
 
