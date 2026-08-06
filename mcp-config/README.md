@@ -1,32 +1,20 @@
 # Configuración MCP para clientes/hosts
 
-Un fichero de configuración por cliente MCP, todos en esta misma carpeta, con
-nombre descriptivo. Desde que el laboratorio se despliega con Docker Compose
-(transporte **Streamable HTTP**, ver
-[`docker-compose.vulnerable.yml`](../docker-compose.vulnerable.yml) y
-[`docker-compose.hardened.yml`](../docker-compose.hardened.yml)), conectar un
-cliente no consiste en decirle qué comando lanzar, sino darle directamente la
-**URL** de cada servidor — que debe estar ya arrancado.
+Un fichero de configuración por cliente MCP, todos en esta misma carpeta, con nombre descriptivo. Desde que el laboratorio se despliega con Docker Compose (transporte **Streamable HTTP**, ver [`docker-compose.vulnerable.yml`](../docker-compose.vulnerable.yml) y [`docker-compose.hardened.yml`](../docker-compose.hardened.yml)), conectar un
+cliente no consiste en decirle qué comando lanzar, sino darle directamente la **URL** de cada servidor — que debe estar ya arrancado.
 
-Todos registran los 4 servidores departamentales (versión **vulnerable** y
-**hardened** por separado, 8 entradas) más `hispalis-shadow-analytics-UNOFFICIAL`
-(el servidor no gobernado del escenario 09 — no está en ningún
-`docker-compose.*.yml`, hay que arrancarlo a mano, ver más abajo).
+Todos registran los 4 servidores departamentales (versión **vulnerable** y **hardened** por separado, 8 entradas) más `hispalis-shadow-analytics-UNOFFICIAL` (el servidor no gobernado del escenario 09 — no está en ningún `docker-compose.*.yml`, hay que arrancarlo a mano, ver más abajo).
 
 | Cliente | Fichero | Formato |
 |---|---|---|
-| Claude Desktop | [`claude-desktop-mcp-config.json`](claude-desktop-mcp-config.json) | `mcpServers`, cada entrada con `"url"` |
+| Claude Desktop | [`claude-desktop-mcp-config.json`](claude-desktop-mcp-config.json) | `mcpServers`, cada entrada con `"command": "npx"` + `"args": ["-y", "mcp-remote", "<url>"]` |
 | VS Code (Copilot Chat, modo agent) | [`vscode-mcp-config.json`](vscode-mcp-config.json) | `servers`, cada entrada con `"type": "http"` + `"url"` |
-| Cursor | [`cursor-mcp-config.json`](cursor-mcp-config.json) | `mcpServers`, cada entrada con `"url"` (mismo formato que Claude Desktop) |
-| Claude Code (CLI) | [`claude-code-mcp-config.json`](claude-code-mcp-config.json) | `mcpServers`, cada entrada con `"type": "http"` + `"url"` |
+| Cursor | [`cursor-mcp-config.json`](cursor-mcp-config.json) | `mcpServers`, cada entrada con `"type": "http"` + `"url"` |
 
 
 ##  MCP Inspector
 
-A diferencia de los otros cuatro, Inspector no lee ningún fichero de configuración:
-es una UI web en la que se pega la URL manualmente, servidor a servidor. Es también
-la forma más fiable de invocar una tool con un payload exacto sin depender de que
-un asistente lo transcriba bien. Pasos para ejecutarlo:
+A diferencia de los otros tres, Inspector no lee ningún fichero de configuración: es una UI web en la que se pega la URL manualmente, servidor a servidor. Es también la forma más fiable de invocar una tool con un payload exacto sin depender de que un asistente lo transcriba bien. Pasos para ejecutarlo:
 
 1. Se lanza con el comando:
    ```bash

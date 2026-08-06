@@ -1,31 +1,76 @@
 {
   "mcpServers": {
     "hispalis-rrhh-vulnerable": {
-      "url": "http://localhost:9001/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9001/mcp"
+      ]
     },
     "hispalis-rrhh-hardened": {
-      "url": "http://localhost:9011/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9011/mcp"
+      ]
     },
     "hispalis-finanzas-vulnerable": {
-      "url": "http://localhost:9002/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9002/mcp"
+      ]
     },
     "hispalis-finanzas-hardened": {
-      "url": "http://localhost:9012/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9012/mcp"
+      ]
     },
     "hispalis-it-vulnerable": {
-      "url": "http://localhost:9003/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9003/mcp"
+      ]
     },
     "hispalis-it-hardened": {
-      "url": "http://localhost:9013/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9013/mcp"
+      ]
     },
     "hispalis-direccion-vulnerable": {
-      "url": "http://localhost:9004/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9004/mcp"
+      ]
     },
     "hispalis-direccion-hardened": {
-      "url": "http://localhost:9014/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9014/mcp"
+      ]
     },
     "hispalis-shadow-analytics-UNOFFICIAL": {
-      "url": "http://localhost:9099/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:9099/mcp"
+      ]
     }
   }
 }

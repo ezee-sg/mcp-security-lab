@@ -72,7 +72,7 @@ Cada uno levanta sus 4 servidores (uno por departamento) y un `exfil-listener` p
 docker compose -f siem/wazuh/generate-certs.docker-compose.yml run --rm generator
 ```
 
-### 2. Conectar el cliente MCP (Claude Desktop, VS Code, Cursor, Claude Code...)
+### 2. Conectar el cliente MCP (Claude Desktop, VS Code, Cursor ...)
 
 Con el laboratorio ya arrancado, ver [`mcp-config/README.md`](mcp-config/README.md): un fichero de configuración por cliente, con nombre descriptivo, todos apuntando por URL a los mismos puertos de `docker-compose.vulnerable.yml` / `docker-compose.hardened.yml`.
 
