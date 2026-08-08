@@ -19,3 +19,5 @@ Utilidades de línea de comandos que apoyan el laboratorio. Ninguna automatiza u
 - Como parte del escenario `09_shadow_mcp_servers`: `check_shadow_servers.py`.
 
 Todos aceptan `-h`/sin argumentos para mostrar su uso, y devuelven código de salida `0` si todo está en orden o `1`/`2` si detectan un problema o faltan argumentos — pensado para poder engancharlos a un pipeline CI/CD real sin cambios.
+
+`local_llm_chat.py` no sigue este patrón (es un chat interactivo, no un control de proceso) — está documentado junto al resto de clientes MCP en [`mcp-config/README.md`](../mcp-config/README.md).

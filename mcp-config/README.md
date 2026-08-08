@@ -31,3 +31,23 @@ A diferencia de los otros tres, Inspector no lee ningún fichero de configuraci�
 4. Al pulsar **Connect**, con el fichero de compose correspondiente arrancado, aparecen las pestañas **Tools / Resources / Prompts**.
 5. En **Tools**, se elige la tool, se rellena el formulario de parámetros con el payload exacto del escenario y se pulsa **Run Tool**. Para probar la versión endurecida, se añade `session_token` como parámetro adicional, con el valor de `python tools/issue_token.py <usuario>`.
 
+## Modelo local (Ollama)
+
+Alternativa a los cuatro clientes anteriores para reproducir los escenarios contra un modelo que **no** tiene el alineamiento/entrenamiento de seguridad de Claude — útil cuando se quiere observar el efecto de una tool poisoning/prompt injection sin que el modelo la reconozca y la rechace por su cuenta. No añade ningún system prompt de seguridad ni detección de prompt injection propia: lo que el modelo haga con el contenido de una tool depende solo de él.
+
+Requiere [Ollama](https://ollama.com/) instalado en el host, con un modelo que soporte tool-calling ya descargado:
+
+```bash
+ollama pull llama3.1
+```
+
+Hay dos formas de usarlo:
+
+- **Chat web (`local-llm-chat`, recomendado):** se despliega solo, como un servicio más de `docker-compose.vulnerable.yml`/`docker-compose.hardened.yml` — sube y baja con el resto del laboratorio, conectado ya a los 4 servidores departamentales de ese fichero. Solo hace falta abrir `http://localhost:8000`. Ver [`local-llm-web/README.md`](../local-llm-web/README.md) para configurar el modelo u otros servidores.
+- **CLI (`tools/local_llm_chat.py`):** para uso manual/puntual desde terminal, con control fino de qué servidores conectar en cada momento:
+  ```bash
+  python tools/local_llm_chat.py --server http://localhost:9001/mcp --server http://localhost:9004/mcp --model qwen2.5:7b
+  ```
+
+En ambos casos, se escribe la misma query que indica el escenario tal cual, y para la versión endurecida se incluye el `session_token` (`python tools/issue_token.py <usuario>`) en el propio mensaje, igual que con los demás clientes. Cada `tool_call` y su resultado se muestran como evidencia (en el chat web, como nota técnica entre mensajes; en la CLI, por consola).
+

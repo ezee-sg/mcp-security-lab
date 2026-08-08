@@ -24,11 +24,12 @@ servers/shadow-analytics/      Servidor MCP no gobernado (fuera de Docker y de s
 exfil-listener/                "Servidor del atacante" — ver exfil-listener/README.md
 tools/                         Utilidades de análisis pre-despliegue y CLI de login — ver tools/README.md
 mcp-config/                    Configuración para clientes MCP — ver mcp-config/README.md
+local-llm-web/                 Chat web (modelo local vía Ollama) con aspecto de asistente interno — ver local-llm-web/README.md
 scenarios/<01..10>_*/          Un README.md por categoría OWASP MCP Top 10
 logs/audit.log                 Generado en tiempo de ejecución por las versiones endurecidas
 siem/                          SIEM (Wazuh + Grafana), parte del despliegue endurecido — ver siem/README.md
-docker-compose.vulnerable.yml  Despliegue vulnerable (4 servidores + exfil-listener)
-docker-compose.hardened.yml    Despliegue endurecido (4 servidores + exfil-listener + SIEM)
+docker-compose.vulnerable.yml  Despliegue vulnerable (4 servidores + exfil-listener + chat local-llm)
+docker-compose.hardened.yml    Despliegue endurecido (4 servidores + exfil-listener + chat local-llm + SIEM)
 ```
 
 ## Departamentos y tools expuestas
@@ -64,7 +65,7 @@ docker compose -f docker-compose.vulnerable.yml up -d --build
 docker compose -f docker-compose.hardened.yml up -d --build
 ```
 
-Cada uno levanta sus 4 servidores (uno por departamento) y un `exfil-listener` propio en el puerto 8888. Es recomendable solo desplegar uno de los dos ya que si se levantan los dos ficheros a la vez, sus dos `exfil-listener` chocan en ese puerto (solo puede haber uno escuchando en 8888).
+Cada uno levanta sus 4 servidores (uno por departamento), un `exfil-listener` propio en el puerto 8888 y un chat web (`local-llm-chat`, ver punto 2) en el puerto 8000. Es recomendable solo desplegar uno de los dos ya que si se levantan los dos ficheros a la vez, chocan en esos mismos puertos (solo puede haber un proceso escuchando en cada uno).
 
 `docker-compose.hardened.yml` incluye también el SIEM (Wazuh + Grafana, ver punto 7). **Antes de su primer `up`** es necesario generar los certificados que esos servicios necesitan (si no, `wazuh.indexer` falla al arrancar con un error de montaje):
 
@@ -72,9 +73,11 @@ Cada uno levanta sus 4 servidores (uno por departamento) y un `exfil-listener` p
 docker compose -f siem/wazuh/generate-certs.docker-compose.yml run --rm generator
 ```
 
-### 2. Conectar el cliente MCP (Claude Desktop, VS Code, Cursor ...)
+### 2. Conectar el cliente MCP (Claude Desktop, VS Code, Cursor, chat local...)
 
 Con el laboratorio ya arrancado, ver [`mcp-config/README.md`](mcp-config/README.md): un fichero de configuración por cliente, con nombre descriptivo, todos apuntando por URL a los mismos puertos de `docker-compose.vulnerable.yml` / `docker-compose.hardened.yml`.
+
+El propio compose despliega también `local-llm-chat` (ver [`local-llm-web/README.md`](local-llm-web/README.md)): un chat web con aspecto de asistente interno de empresa, conectado a los 4 servidores de ese fichero y a un modelo local vía [Ollama](https://ollama.com/) — útil para reproducir los escenarios sin el alineamiento de seguridad de Claude. Con Ollama instalado y un modelo descargado (`ollama pull llama3.1`), solo hace falta abrir `http://localhost:8000`.
 
 Para inspeccionar un servidor suelto sin cliente de chat:
 

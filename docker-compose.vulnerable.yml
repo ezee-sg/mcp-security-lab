@@ -42,3 +42,21 @@ services:
       dockerfile: exfil-listener/Dockerfile
     ports:
       - "8888:8888"
+
+  local-llm-chat:
+    build:
+      context: .
+      dockerfile: local-llm-web/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MCP_SERVERS=http://rrhh:9001/mcp,http://finanzas:9002/mcp,http://it:9003/mcp,http://direccion:9004/mcp
+      - OLLAMA_URL=http://host.docker.internal:11434/api/chat
+      - OLLAMA_MODEL=qwen2.5:7b
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - rrhh
+      - finanzas
+      - it
+      - direccion
