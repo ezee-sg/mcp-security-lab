@@ -51,3 +51,5 @@ Hay dos formas de usarlo:
 
 En ambos casos, se escribe la misma query que indica el escenario tal cual, y para la versión endurecida se incluye el `session_token` (`python tools/issue_token.py <usuario>`) en el propio mensaje, igual que con los demás clientes. Cada `tool_call` y su resultado se muestran como evidencia (en el chat web, como nota técnica entre mensajes; en la CLI, por consola).
 
+Los resources MCP (como `it://tickets/latest`, usado en el escenario 06) también están disponibles: se exponen al modelo como tools sintéticas de solo lectura, ya que Ollama no tiene un concepto nativo de "resource".
+

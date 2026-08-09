@@ -54,3 +54,7 @@ local-llm-web/
 ```
 
 Cada `tool_call`/`tool_result` se muestra en el chat como una nota técnica entre los mensajes, igual que en la versión de terminal — útil como evidencia.
+
+## Resources MCP (p. ej. `it://tickets/latest`)
+
+La API de tool-calling de Ollama no tiene el concepto de "resource" de MCP, así que cada resource de los servidores conectados se expone al modelo como una tool sintética de solo lectura, con nombre `read_resource_<uri saneada>` (por ejemplo, `it://tickets/latest` se convierte en `read_resource_it_tickets_latest`). El modelo la ve y la invoca como cualquier otra tool, sin parámetros; por debajo, el harness llama a `session.read_resource(...)` en vez de `session.call_tool(...)`. Necesario para reproducir el escenario 06 (Intent Flow Subversion) con un modelo local.

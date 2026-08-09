@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import re
 import sys
 from contextlib import AsyncExitStack
 
 import httpx
+from pydantic import AnyUrl
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
@@ -27,11 +29,25 @@ def mcp_tool_to_ollama(tool) -> dict:
         },
     }
 
+def resource_tool_name(uri: str) -> str:
+    return "read_resource_" + re.sub(r"[^a-zA-Z0-9_]", "_", uri.replace("://", "_"))
+
+def mcp_resource_to_ollama(resource) -> dict:
+    return {
+        "type": "function",
+        "function": {
+            "name": resource_tool_name(str(resource.uri)),
+            "description": f"[Resource MCP {resource.uri}] {resource.description or ''}",
+            "parameters": {"type": "object", "properties": {}},
+        },
+    }
+
 async def connect_servers(
     urls: list[str], stack: AsyncExitStack
-) -> tuple[dict[str, ClientSession], list[dict]]:
-    """Conecta a cada URL y devuelve (tool_name -> session, tools en formato Ollama)."""
+) -> tuple[dict[str, ClientSession], dict[str, tuple[ClientSession, str]], list[dict]]:
+    """Conecta a cada URL y devuelve (tool_name -> session, resource_tool_name -> (session, uri), tools en formato Ollama)."""
     tool_owner: dict[str, ClientSession] = {}
+    resource_owner: dict[str, tuple[ClientSession, str]] = {}
     ollama_tools: list[dict] = []
 
     for url in urls:
@@ -39,6 +55,7 @@ async def connect_servers(
         session = await stack.enter_async_context(ClientSession(read_stream, write_stream))
         await session.initialize()
         listed = await session.list_tools()
+        listed_resources = await session.list_resources()
 
         for tool in listed.tools:
             if tool.name in tool_owner:
@@ -46,9 +63,16 @@ async def connect_servers(
             tool_owner[tool.name] = session
             ollama_tools.append(mcp_tool_to_ollama(tool))
 
-        print(f"Conectado a {url} -- tools: {[t.name for t in listed.tools]}")
+        for resource in listed_resources.resources:
+            resource_owner[resource_tool_name(str(resource.uri))] = (session, str(resource.uri))
+            ollama_tools.append(mcp_resource_to_ollama(resource))
 
-    return tool_owner, ollama_tools
+        print(
+            f"Conectado a {url} -- tools: {[t.name for t in listed.tools]} "
+            f"-- resources: {[str(r.uri) for r in listed_resources.resources]}"
+        )
+
+    return tool_owner, resource_owner, ollama_tools
 
 async def call_ollama(model: str, messages: list[dict], tools: list[dict]) -> dict:
     async with httpx.AsyncClient(timeout=120.0) as client:
@@ -68,7 +92,12 @@ def print_tools(ollama_tools: list[dict]) -> None:
         print(f"\n- {fn['name']}:\n  {fn['description']!r}")
     print()
 
-async def run_chat(model: str, tool_owner: dict[str, ClientSession], ollama_tools: list[dict]) -> None:
+async def run_chat(
+    model: str,
+    tool_owner: dict[str, ClientSession],
+    resource_owner: dict[str, tuple[ClientSession, str]],
+    ollama_tools: list[dict],
+) -> None:
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
     print("\nEscribe tu peticion ('/tools' para ver las descripciones tal cual las recibe el modelo, 'salir' para terminar).\n")
 
@@ -100,16 +129,26 @@ async def run_chat(model: str, tool_owner: dict[str, ClientSession], ollama_tool
                 arguments = call["function"].get("arguments") or {}
                 print(f"  [tool_call] {name}({arguments})")
 
-                session = tool_owner.get(name)
-                if session is None:
-                    result_text = f"ERROR: tool '{name}' no disponible en ningun servidor conectado."
+                if name in resource_owner:
+                    session, uri = resource_owner[name]
+                    try:
+                        result = await session.read_resource(AnyUrl(uri))
+                        result_text = "\n".join(
+                            block.text for block in result.contents if hasattr(block, "text")
+                        )
+                    except Exception as exc:
+                        result_text = f"ERROR leyendo resource '{uri}': {exc}"
                 else:
-                    result = await session.call_tool(name, arguments)
-                    result_text = "\n".join(
-                        block.text for block in result.content if hasattr(block, "text")
-                    )
-                    if result.isError:
-                        result_text = f"ERROR: {result_text}"
+                    session = tool_owner.get(name)
+                    if session is None:
+                        result_text = f"ERROR: tool '{name}' no disponible en ningun servidor conectado."
+                    else:
+                        result = await session.call_tool(name, arguments)
+                        result_text = "\n".join(
+                            block.text for block in result.content if hasattr(block, "text")
+                        )
+                        if result.isError:
+                            result_text = f"ERROR: {result_text}"
 
                 print(f"  [tool_result] {result_text[:300]}")
                 messages.append({"role": "tool", "tool_name": name, "content": result_text})
@@ -118,11 +157,11 @@ async def run_chat(model: str, tool_owner: dict[str, ClientSession], ollama_tool
 
 async def main_async(args: argparse.Namespace) -> int:
     async with AsyncExitStack() as stack:
-        tool_owner, ollama_tools = await connect_servers(args.server, stack)
+        tool_owner, resource_owner, ollama_tools = await connect_servers(args.server, stack)
         if not ollama_tools:
-            print("Ningun servidor conectado expuso tools.")
+            print("Ningun servidor conectado expuso tools ni resources.")
             return 1
-        await run_chat(args.model, tool_owner, ollama_tools)
+        await run_chat(args.model, tool_owner, resource_owner, ollama_tools)
     return 0
 
 def main() -> int:
