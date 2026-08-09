@@ -114,20 +114,26 @@
   #composer {
     flex-shrink: 0;
     display: flex;
+    align-items: flex-end;
     gap: 10px;
     padding: 14px 20px;
     background: var(--panel);
     border-top: 1px solid #dde2ea;
   }
-  #composer input {
+  #composer textarea {
     flex: 1;
     padding: 12px 14px;
     border: 1px solid #cfd6e2;
     border-radius: 10px;
     font-size: 14.5px;
+    font-family: inherit;
     outline: none;
+    resize: vertical;
+    min-height: 44px;
+    max-height: 260px;
+    line-height: 1.4;
   }
-  #composer input:focus {
+  #composer textarea:focus {
     border-color: var(--brand);
   }
   #composer button {
@@ -135,7 +141,7 @@
     color: white;
     border: none;
     border-radius: 10px;
-    padding: 0 22px;
+    padding: 12px 22px;
     font-size: 14.5px;
     font-weight: 600;
     cursor: pointer;
@@ -166,7 +172,7 @@
 <div id="chat"></div>
 
 <form id="composer">
-  <input id="input" type="text" placeholder="Escribe tu mensaje..." autocomplete="off" />
+  <textarea id="input" rows="1" placeholder="Escribe tu mensaje..." autocomplete="off"></textarea>
   <button id="send" type="submit">Enviar</button>
 </form>
 
@@ -210,6 +216,19 @@ function removeTyping() {
   if (el) el.remove();
 }
 
+function autoGrow() {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 260) + "px";
+}
+input.addEventListener("input", autoGrow);
+
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    form.requestSubmit();
+  }
+});
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const text = input.value.trim();
@@ -217,6 +236,7 @@ form.addEventListener("submit", async (e) => {
 
   addMessage("user", text);
   input.value = "";
+  autoGrow();
   input.disabled = true;
   sendBtn.disabled = true;
   addTyping();
