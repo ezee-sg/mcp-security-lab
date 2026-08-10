@@ -60,7 +60,7 @@ Esto crea `siem/wazuh/certs/wazuh-indexer-certs/` con los `.pem` que ya referenc
 docker compose -f docker-compose.hardened.yml up -d --build
 ```
 
-Deja disponibles, además de los 4 servidores MCP hardeneds y su `exfil-listener`:
+Deja disponibles, además de los 4 servidores MCP hardened y su `exfil-listener`:
 
 | Servicio | URL | Credenciales |
 |---|---|---|
@@ -87,9 +87,9 @@ Para detener solo el SIEM y mantener los servidores MCP arriba, basta con elimin
 ```
 siem/
 ├── wazuh/
-│   ├── generate-certs.docker-compose.yml   # generación de certificados (paso 1)
-│   ├── certs/                              # certificados generados (no versionado)
-│   └── config/                             # ossec.conf, reglas, config de indexer y dashboard
+│   ├── generate-certs.docker-compose.yml   generación de certificados
+│   ├── certs/                              certificados generados (no versionado)
+│   └── config/                             config de manager, indexer y dashboard
 └── grafana/
-    └── provisioning/                       # datasource y dashboard de Grafana
+    └── provisioning/                       datasource y dashboard
 ```

@@ -1,36 +1,33 @@
 # Hispalis Technologies - Laboratorio vulnerable de Model Context Protocol (MCP)
 
-Parte práctica del TFM *"Diseño y evaluación de seguridad en arquitecturas LLM
-basadas en MCP"* para el Máster Universitario en Ciberseguridad de la Universidad de Málaga.
+Parte práctica del TFM *"Diseño y evaluación de seguridad en arquitecturas LLM basadas en MCP"* para el Máster Universitario en Ciberseguridad de la Universidad de Málaga.
 
-Simula una organización ficticia (**Hispalis Technologies**) con 4 servidores MCP
-departamentales (RRHH, Finanzas, IT y Dirección ), cada uno disponible en una
-**versión vulnerable** y una **versión hardened**, más un servidor "shadow" no
-gobernado. Sobre este entorno se ejecutan **10 escenarios de ataque, uno por cada
-categoría del [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/)**.
+Simula una organización ficticia (**Hispalis Technologies**) con 4 servidores MCP departamentales (RRHH, Finanzas, IT y Dirección ), cada uno disponible en una **versión vulnerable** y una **versión hardened**, más un servidor "shadow" no gobernado. Sobre este entorno se ejecutan **10 escenarios de ataque, uno por cada categoría del [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/)**.
 
-El laboratorio se despliega con **dos ficheros Docker Compose independientes**
-([`docker-compose.vulnerable.yml`](docker-compose.vulnerable.yml) y [`docker-compose.hardened.yml`](docker-compose.hardened.yml)), cada uno con sus 4 servidores departamentales y su propio `exfil-listener`, escuchando en HTTP y listos para conectar desde Claude Desktop, VS Code, etc. sin más pasos.
+El laboratorio se despliega con **dos ficheros Docker Compose independientes** ([`docker-compose.vulnerable.yml`](docker-compose.vulnerable.yml) y [`docker-compose.hardened.yml`](docker-compose.hardened.yml)), cada uno con sus 4 servidores departamentales y su propio `exfil-listener`, escuchando en HTTP y listos para conectar desde Claude Desktop, VS Code, etc. sin más pasos.
 
-> ⚠️ Entorno de aprendizaje. No usar contra datos reales ni exponerlo en redes no
-> controladas. Las credenciales, tokens y "secretos" de este repositorio son ficticios.
+> ⚠️ Entorno de aprendizaje. No usar contra datos reales ni exponerlo en redes no controladas. Las credenciales, tokens y "secretos" de este repositorio son ficticios.
 
 ## Estructura del repositorio
 
 ```
-common/                        Módulos compartidos por las versiones hardeneds — ver common/README.md
-servers/<dept>/                Servidores MCP departamentales (vulnerable + hardened) — ver servers/README.md
-servers/shadow-analytics/      Servidor MCP no gobernado (fuera de Docker y de servers/registry.json)
-exfil-listener/                "Servidor del atacante" — ver exfil-listener/README.md
-tools/                         Utilidades de análisis pre-despliegue y CLI de login — ver tools/README.md
-mcp-config/                    Configuración para clientes MCP — ver mcp-config/README.md
-local-llm-web/                 Chat web (modelo local vía Ollama) con aspecto de asistente interno — ver local-llm-web/README.md
-scenarios/<01..10>_*/          Un README.md por categoría OWASP MCP Top 10
-logs/audit.log                 Generado en tiempo de ejecución por las versiones hardeneds
-siem/                          SIEM (Wazuh + Grafana), parte del despliegue hardened — ver siem/README.md
-docker-compose.vulnerable.yml  Despliegue vulnerable (4 servidores + exfil-listener + chat local-llm)
-docker-compose.hardened.yml    Despliegue hardened (4 servidores + exfil-listener + chat local-llm + SIEM)
+.
+├── common/                         Módulos compartidos por las versiones hardened
+├── servers/
+│   ├── <dept>/                     Servidores MCP departamentales (vulnerable + hardened)
+│   └── shadow-analytics/           Servidor MCP no gobernado, fuera de Docker
+├── exfil-listener/                 "Servidor del atacante"
+├── tools/                          Utilidades de análisis y CLI de login
+├── mcp-config/                     Configuración para clientes MCP
+├── local-llm-web/                  Chat web con modelo local (Ollama)
+├── scenarios/<01..10>_*/           Un README.md por categoría OWASP MCP Top 10
+├── logs/audit.log                  Generado en tiempo de ejecución (versiones hardened)
+├── siem/                           SIEM (Wazuh + Grafana), parte del despliegue hardened
+├── docker-compose.vulnerable.yml   Despliegue vulnerable
+└── docker-compose.hardened.yml     Despliegue hardened (incluye el SIEM)
 ```
+
+Cada carpeta con lógica propia tiene su propio `README.md` con el detalle completo.
 
 ## Departamentos y tools expuestas
 

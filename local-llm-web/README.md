@@ -49,8 +49,8 @@ python local-llm-web/app.py --server http://localhost:9001/mcp --server http://l
 ```
 local-llm-web/
 ├── Dockerfile
-├── app.py               FastAPI: conecta los servidores MCP y llama a Ollama
-└── static/chat.html      Interfaz de chat (HTML/CSS/JS, sin dependencias externas)
+├── app.py             FastAPI: conecta con los servidores MCP y con Ollama
+└── static/chat.html   Interfaz de chat, sin dependencias externas
 ```
 
 Cada `tool_call`/`tool_result` se muestra en el chat como una nota técnica entre los mensajes, igual que en la versión de terminal — útil como evidencia.
