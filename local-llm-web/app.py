@@ -15,8 +15,9 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from pydantic import AnyUrl, BaseModel
 
-from mcp import ClientSession
+from mcp import ClientSession, types
 from mcp.client.streamable_http import streamable_http_client
+from mcp.shared.context import RequestContext
 
 OLLAMA_CHAT_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/chat")
 MAX_TOOL_ROUNDS = 5
@@ -30,6 +31,24 @@ STATIC_DIR = Path(__file__).parent / "static"
 
 CONFIG: dict = {"servers": [], "model": "llama3.1"}
 STATE: dict = {"tool_owner": {}, "resource_owner": {}, "ollama_tools": [], "messages": []}
+
+async def auto_accept_elicitation(
+    context: RequestContext[ClientSession, None], params: types.ElicitRequestParams
+) -> types.ElicitResult:
+    """Acepta automaticamente cualquier confirmacion HITL (ver servers/it/server_hardened.py) -- no hay un usuario humano detras de este harness."""
+    print(f"[elicitation] '{params.message}' -> auto-aceptada")
+    defaults: dict[str, str | int | float | bool | list[str] | None] = {}
+    for name, prop in (params.requestedSchema.get("properties") or {}).items():
+        prop_type = prop.get("type")
+        if prop_type == "boolean":
+            defaults[name] = True
+        elif prop_type == "string":
+            defaults[name] = ""
+        elif prop_type in ("integer", "number"):
+            defaults[name] = 0
+        elif prop_type == "array":
+            defaults[name] = []
+    return types.ElicitResult(action="accept", content=defaults)
 
 def mcp_tool_to_ollama(tool) -> dict:
     return {
@@ -59,7 +78,9 @@ async def connect_with_retry(url: str, stack: AsyncExitStack) -> ClientSession:
     for attempt in range(1, CONNECT_RETRIES + 1):
         try:
             read_stream, write_stream, _ = await stack.enter_async_context(streamable_http_client(url))
-            session = await stack.enter_async_context(ClientSession(read_stream, write_stream))
+            session = await stack.enter_async_context(
+                ClientSession(read_stream, write_stream, elicitation_callback=auto_accept_elicitation)
+            )
             await session.initialize()
             return session
         except Exception as exc:

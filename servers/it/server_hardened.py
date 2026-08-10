@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 
 import httpx
 from mcp.server.fastmcp import Context, FastMCP
+from pydantic import BaseModel
 
 from common.auth import require_role
 from common.logging_utils import log_tool_call
@@ -17,6 +18,9 @@ from common.sanitize import redact_secrets, sanitize_untrusted_text
 from database import DB_PATH, init_db, insert_ticket
 
 init_db()
+
+class ConfirmationSchema(BaseModel):
+    confirm: bool
 
 CONFIGS_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), "configs"))
 RUGPULL_FLAG_PATH = os.path.join(os.path.dirname(__file__), ".rugpull_active")
@@ -93,9 +97,9 @@ async def send_notification(ctx: Context, to: str, subject: str, body: str, sess
 
     confirmation = await ctx.elicit(
         message=f"¿Confirmar el envio de una notificacion a '{to}' con asunto '{subject}'?",
-        schema={"type": "boolean"},
+        schema=ConfirmationSchema,
     )
-    if not getattr(confirmation, "data", False):
+    if confirmation.action != "accept" or not confirmation.data.confirm:
         result = "Operacion cancelada por el usuario (HITL)."
         log_tool_call("it.send_notification", {"to": to, "subject": subject}, payload["role"], result, False)
         return result
