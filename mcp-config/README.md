@@ -29,7 +29,7 @@ A diferencia de los otros tres, Inspector no lee ningún fichero de configuraci�
    - Cabeceras vacías: ninguno de nuestros servidores exige autenticación a nivel
      de transporte.
 4. Al pulsar **Connect**, con el fichero de compose correspondiente arrancado, aparecen las pestañas **Tools / Resources / Prompts**.
-5. En **Tools**, se elige la tool, se rellena el formulario de parámetros con el payload exacto del escenario y se pulsa **Run Tool**. Para probar la versión endurecida, se añade `session_token` como parámetro adicional, con el valor de `python tools/issue_token.py <usuario>`.
+5. En **Tools**, se elige la tool, se rellena el formulario de parámetros con el payload exacto del escenario y se pulsa **Run Tool**. Para probar la versión hardened, se añade `session_token` como parámetro adicional, con el valor de `python tools/issue_token.py <usuario>`.
 
 ## Modelo local (Ollama)
 
@@ -49,7 +49,7 @@ Hay dos formas de usarlo:
   python tools/local_llm_chat.py --server http://localhost:9001/mcp --server http://localhost:9004/mcp --model qwen2.5:7b
   ```
 
-En ambos casos, se escribe la misma query que indica el escenario tal cual, y para la versión endurecida se incluye el `session_token` (`python tools/issue_token.py <usuario>`) en el propio mensaje, igual que con los demás clientes. Cada `tool_call` y su resultado se muestran como evidencia (en el chat web, como nota técnica entre mensajes; en la CLI, por consola).
+En ambos casos, se escribe la misma query que indica el escenario tal cual, y para la versión hardened se incluye el `session_token` (`python tools/issue_token.py <usuario>`) en el propio mensaje, igual que con los demás clientes. Cada `tool_call` y su resultado se muestran como evidencia (en el chat web, como nota técnica entre mensajes; en la CLI, por consola).
 
 Los resources MCP (como `it://tickets/latest`, usado en el escenario 06) también están disponibles: se exponen al modelo como tools sintéticas de solo lectura, ya que Ollama no tiene un concepto nativo de "resource".
 

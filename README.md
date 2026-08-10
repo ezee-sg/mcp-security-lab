@@ -5,7 +5,7 @@ basadas en MCP"* para el Máster Universitario en Ciberseguridad de la Universid
 
 Simula una organización ficticia (**Hispalis Technologies**) con 4 servidores MCP
 departamentales (RRHH, Finanzas, IT y Dirección ), cada uno disponible en una
-**versión vulnerable** y una **versión endurecida**, más un servidor "shadow" no
+**versión vulnerable** y una **versión hardened**, más un servidor "shadow" no
 gobernado. Sobre este entorno se ejecutan **10 escenarios de ataque, uno por cada
 categoría del [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/)**.
 
@@ -18,23 +18,23 @@ El laboratorio se despliega con **dos ficheros Docker Compose independientes**
 ## Estructura del repositorio
 
 ```
-common/                        Módulos compartidos por las versiones endurecidas — ver common/README.md
-servers/<dept>/                Servidores MCP departamentales (vulnerable + endurecida) — ver servers/README.md
+common/                        Módulos compartidos por las versiones hardeneds — ver common/README.md
+servers/<dept>/                Servidores MCP departamentales (vulnerable + hardened) — ver servers/README.md
 servers/shadow-analytics/      Servidor MCP no gobernado (fuera de Docker y de servers/registry.json)
 exfil-listener/                "Servidor del atacante" — ver exfil-listener/README.md
 tools/                         Utilidades de análisis pre-despliegue y CLI de login — ver tools/README.md
 mcp-config/                    Configuración para clientes MCP — ver mcp-config/README.md
 local-llm-web/                 Chat web (modelo local vía Ollama) con aspecto de asistente interno — ver local-llm-web/README.md
 scenarios/<01..10>_*/          Un README.md por categoría OWASP MCP Top 10
-logs/audit.log                 Generado en tiempo de ejecución por las versiones endurecidas
-siem/                          SIEM (Wazuh + Grafana), parte del despliegue endurecido — ver siem/README.md
+logs/audit.log                 Generado en tiempo de ejecución por las versiones hardeneds
+siem/                          SIEM (Wazuh + Grafana), parte del despliegue hardened — ver siem/README.md
 docker-compose.vulnerable.yml  Despliegue vulnerable (4 servidores + exfil-listener + chat local-llm)
-docker-compose.hardened.yml    Despliegue endurecido (4 servidores + exfil-listener + chat local-llm + SIEM)
+docker-compose.hardened.yml    Despliegue hardened (4 servidores + exfil-listener + chat local-llm + SIEM)
 ```
 
 ## Departamentos y tools expuestas
 
-| Servidor | Puerto vulnerable | Puerto endurecida | Tools | Resource |
+| Servidor | Puerto vulnerable | Puerto hardened | Tools | Resource |
 |---|---|---|---|---|
 | **RRHH** (`hr.*`) | 9001 | 9011 | `get_employee`, `list_employees` | `hr://organigrama` |
 | **Finanzas** (`fin.*`) | 9002 | 9012 | `query_invoices`, `get_salary_report`, `get_cached_report` | — |
@@ -58,7 +58,7 @@ docker-compose.hardened.yml    Despliegue endurecido (4 servidores + exfil-liste
 
 ### 1. Desplegar con Docker Compose
 
-Cada fichero es una organización completa e independiente (uno para la versión vulnerable y otro para la versión endurecida).
+Cada fichero es una organización completa e independiente (uno para la versión vulnerable y otro para la versión hardened).
 
 ```bash
 docker compose -f docker-compose.vulnerable.yml up -d --build
@@ -105,7 +105,7 @@ Escucha en `http://127.0.0.1:9099/mcp`. No tiene Dockerfile ni entrada en ningú
 Los escenarios **no son scripts**: se reproducen conversando con un cliente MCP real (Claude Desktop, VS Code, o directamente MCP Inspector) conectado a los servidores correspondientes, tal y como haría un usuario o un atacante en el mundo real.
 
 1. Es necesario comprobar que el fichero de compose correspondiente (`docker-compose.vulnerable.yml` y/o `docker-compose.hardened.yml`) está arriba y que el/los servidor(es) que indique el escenario están conectados en el cliente utilizado (ver [`mcp-config/`](mcp-config/README.md)).
-2. Si el escenario lo requiere, es necesario obtener un `session_token` para probar la versión endurecida:
+2. Si el escenario lo requiere, es necesario obtener un `session_token` para probar la versión hardened:
    ```bash
    python tools/issue_token.py <usuario>   # p. ej. sofia.reyes, luis.perez...
    ```
@@ -121,9 +121,9 @@ python tools/verify_dependencies.py servers/finanzas/dependencies.lock.json  # S
 python tools/check_shadow_servers.py                                # Shadow MCP Servers (MCP09)
 ```
 
-Ver [`tools/README.md`](tools/README.md) para qué hace cada una (incluida `issue_token.py`, la CLI de login usada en los escenarios contra la versión endurecida). Estas utilidades se ejecutan en el host, no dentro de Docker.
+Ver [`tools/README.md`](tools/README.md) para qué hace cada una (incluida `issue_token.py`, la CLI de login usada en los escenarios contra la versión hardened). Estas utilidades se ejecutan en el host, no dentro de Docker.
 
-### 7. SIEM (Wazuh + Grafana), parte del despliegue endurecido
+### 7. SIEM (Wazuh + Grafana), parte del despliegue hardened
 
 Aporta trazabilidad real de accesos indebidos (mitigación de MCP08) sobre `logs/audit.log`: Wazuh genera una alerta por cada llamada denegada por RBAC y Grafana la visualiza en un panel. Los 4 servicios (`wazuh.manager`, `wazuh.indexer`, `wazuh.dashboard`, `grafana`) están definidos en el mismo `docker-compose.hardened.yml`, no en un fichero aparte — suben y bajan junto con los servidores MCP. Ver [`siem/README.md`](siem/README.md) para el detalle completo: arquitectura, alertas, credenciales y cómo comprobarlo.
 

@@ -29,13 +29,13 @@ O, más directo: se abre el panel de herramientas del propio cliente (en Claude 
 
 ### Información que se espera extraer
 
-Nombres, descripciones y esquema de parámetros de **todas** las tools de los 4 servidores, incluidas `fin.get_salary_report` y `dir.get_strategic_documents`. Esto **no cambia** entre la versión vulnerable y la endurecida - es una limitación de alcance documentada (el token viaja como parámetro de `tools/call`, no como credencial de conexión).
+Nombres, descripciones y esquema de parámetros de **todas** las tools de los 4 servidores, incluidas `fin.get_salary_report` y `dir.get_strategic_documents`. Esto **no cambia** entre la versión vulnerable y la hardened - es una limitación de alcance documentada (el token viaja como parámetro de `tools/call`, no como credencial de conexión).
 
 ---
 
 ## B) Invocación sin `session_token`
 
-Solo tiene sentido contra la versión endurecida (la vulnerable no exige token en ningún caso).
+Solo tiene sentido contra la versión hardened (la vulnerable no exige token en ningún caso).
 
 ### Query a realizar al LLM
 
@@ -90,3 +90,7 @@ print(jwt.encode({'sub':'sofia.reyes','role':'director','department':'direccion'
 ## Impacto
 
 Sin estos controles, la identidad del llamante es una simple afirmación no verificada: cualquiera puede enumerar la superficie completa y, en la versión vulnerable, actuar sobre ella sin demostrar quién es.
+
+## Limitación conocida: sin autenticación de transporte
+
+`session_token` autoriza cada llamada (autorización a nivel de aplicación), pero ninguna de las dos versiones exige credencial alguna para **abrir la conexión MCP** en sí: el endpoint HTTP (`/mcp`) acepta cualquier cliente, y por eso el apartado A) de este mismo escenario funciona igual en ambas versiones. Un despliegue en producción debería añadir también autorización a nivel de transporte (p. ej. OAuth 2.1, tal como contempla la propia especificación MCP para HTTP) delante del endpoint. Queda fuera de alcance de este laboratorio - se documenta aquí como limitación conocida, no como algo a explotar.

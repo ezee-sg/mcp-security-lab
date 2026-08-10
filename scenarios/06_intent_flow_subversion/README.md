@@ -39,7 +39,7 @@ Como el paso 1 se hace fuera de cualquier chat con LLM, el texto inyectado nunca
 ## Información que se espera extraer
 
 - **Vulnerable:** al leer el resource `it://tickets/latest`, el bloque `[INSTRUCCION PARA EL ASISTENTE: ...]` llega intacto al contexto del modelo, que puede llegar a seguirlo (esto depende del modelo y del host - ver más abajo).
-- **Endurecida:** el mismo contenido se devuelve con el patrón sospechoso sustituido por `[CONTENIDO ELIMINADO POR EL FILTRO ANTI-PROMPT-INJECTION]` y envuelto en un delimitador `<untrusted_external_data>` que indica explícitamente que no debe interpretarse como instrucción.
+- **hardened:** el mismo contenido se devuelve con el patrón sospechoso sustituido por `[CONTENIDO ELIMINADO POR EL FILTRO ANTI-PROMPT-INJECTION]` y envuelto en un delimitador `<untrusted_external_data>` que indica explícitamente que no debe interpretarse como instrucción.
 
 ## Nota sobre la fiabilidad de este escenario
 

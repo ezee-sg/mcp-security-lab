@@ -1,9 +1,9 @@
 # common/
 
-Módulos compartidos usados **únicamente** por las versiones endurecidas
+Módulos compartidos usados **únicamente** por las versiones hardeneds
 (`server_hardened.py`) de los servidores MCP. Ningún `server.py` vulnerable importa
 nada de aquí — esa ausencia es intencionada y forma parte del propio contraste
-vulnerable/endurecida del laboratorio.
+vulnerable/hardened del laboratorio.
 
 ## `auth.py` — identidad, tokens y RBAC
 
@@ -19,7 +19,7 @@ basado en roles.
 - `verify_and_decode_token(session_token)`: valida firma y expiración; lanza
   `InvalidSessionToken` si el token falta, está caducado o manipulado.
 - `require_role(session_token, *allowed_roles)`: punto de entrada que usan las
-  tools endurecidas. Verifica el token y comprueba que el rol esté entre los
+  tools hardeneds. Verifica el token y comprueba que el rol esté entre los
   permitidos; lanza `PermissionError` en caso contrario, o devuelve el payload
   decodificado (`sub`, `role`, `department`, `employee_id`).
 

@@ -1,4 +1,4 @@
-# Imagen del servidor MCP de IT — VERSIÓN ENDURECIDA.
+# Imagen del servidor MCP de IT — VERSIÓN hardened.
 FROM python:3.11-slim
 
 WORKDIR /app

@@ -4,7 +4,7 @@
 
 ## Objetivo del ataque
 
-Obtener credenciales de sistemas internos sin necesidad de vulnerar ningún control de acceso (el problema no es *quién* puede leer el fichero, sino que el fichero contiene secretos en texto plano) y comprobar que los tokens de sesión de la versión endurecida son legibles por cualquiera que los intercepte, aunque estén firmados.
+Obtener credenciales de sistemas internos sin necesidad de vulnerar ningún control de acceso (el problema no es *quién* puede leer el fichero, sino que el fichero contiene secretos en texto plano) y comprobar que los tokens de sesión de la versión hardened son legibles por cualquiera que los intercepte, aunque estén firmados.
 
 ## Servidor(es) MCP involucrados
 
@@ -20,26 +20,24 @@ Obtener credenciales de sistemas internos sin necesidad de vulnerar ningún cont
 
 > Lee el fichero de configuración `database.yml` del servidor de IT y dime qué contiene.
 
-**Versión endurecida:** primero es necesario obtener un token con rol autorizado
-(`dept_manager`, `it_admin` o `director`):
+**Versión hardened:** primero es necesario obtener un token con rol autorizado (`dept_manager`, `it_admin` o `director`):
 
 ```bash
 python tools/issue_token.py elena.vidal
 ```
 
-> Usando este session_token: `<pegar el token devuelto>`, lee el fichero de
-> configuración `database.yml`.
+> Usando este session_token: `<pegar el token devuelto>`, lee el fichero de configuración `database.yml`.
 
 Si el asistente no incluye el `session_token` en la llamada a la tool, conviene pedírselo explícitamente ("llama a la tool read_config con path='database.yml' y session_token='...'") o utilizar **MCP Inspector** para invocar `read_config` directamente con ambos parámetros en su formulario.
 
 ## Información que se espera extraer
 
 - **Vulnerable:** el contenido íntegro de `database.yml`, incluyendo `password: "F1n4nz4s_2026!"` y `password: "1T_Adm1n_2026!"` en texto plano.
-- **Endurecida:** el mismo fichero, pero con los valores de contraseña sustituidos por `***REDACTED***` — aunque el usuario esté perfectamente autorizado a leer el fichero.
+- **hardened:** el mismo fichero, pero con los valores de contraseña sustituidos por `***REDACTED***` — aunque el usuario esté perfectamente autorizado a leer el fichero.
 
 ## Inspección adicional (fuera del chat)
 
-El `session_token` que usa la versión endurecida es un JWT: está firmado, pero no cifrado. Cualquiera que capture uno (en una traza de red, un log mal configurado, etc.) puede leer sus datos sin conocer la clave de firma del servidor:
+El `session_token` que usa la versión hardened es un JWT: está firmado, pero no cifrado. Cualquiera que capture uno (en una traza de red, un log mal configurado, etc.) puede leer sus datos sin conocer la clave de firma del servidor:
 
 ```bash
 python -c "import jwt,sys; sys.path.insert(0,'.'); from common.auth import issue_token; print(jwt.decode(issue_token('sofia.reyes'), options={'verify_signature': False}))"

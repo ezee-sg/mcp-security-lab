@@ -2,7 +2,7 @@
 
 Añade observabilidad real sobre el `audit.log` que ya generan los 4 servidores **hardened** (`common/logging_utils py::log_tool_call`): un SIEM (Wazuh) que genera alertas cuando el RBAC deniega un acceso, y un panel (Grafana) para visualizarlas. Mitigación de **OWASP MCP08:2025 (Lack of Audit and Telemetry)**.
 
-Se levanta desde el **mismo** `docker-compose.hardened.yml` (no hay un fichero compose separado): los servicios `wazuh.manager`, `wazuh.indexer`, `wazuh.dashboard` y `grafana` forman parte del despliegue endurecido junto a los 4 servidores MCP, y suben y bajan con él. No modifica ningún servidor MCP: lee `logs/audit.log`, la misma carpeta que ya montan los 4 servidores.
+Se levanta desde el **mismo** `docker-compose.hardened.yml` (no hay un fichero compose separado): los servicios `wazuh.manager`, `wazuh.indexer`, `wazuh.dashboard` y `grafana` forman parte del despliegue hardened junto a los 4 servidores MCP, y suben y bajan con él. No modifica ningún servidor MCP: lee `logs/audit.log`, la misma carpeta que ya montan los 4 servidores.
 
 ## Arquitectura
 
@@ -54,13 +54,13 @@ docker compose -f siem/wazuh/generate-certs.docker-compose.yml run --rm generato
 
 Esto crea `siem/wazuh/certs/wazuh-indexer-certs/` con los `.pem` que ya referencia `docker-compose.hardened.yml`. Es un paso único: no hace falta repetirlo salvo que se borre esa carpeta.
 
-### 2. Arrancar (todo el laboratorio endurecido, un único fichero)
+### 2. Arrancar (todo el laboratorio hardened, un único fichero)
 
 ```bash
 docker compose -f docker-compose.hardened.yml up -d --build
 ```
 
-Deja disponibles, además de los 4 servidores MCP endurecidos y su `exfil-listener`:
+Deja disponibles, además de los 4 servidores MCP hardeneds y su `exfil-listener`:
 
 | Servicio | URL | Credenciales |
 |---|---|---|

@@ -65,19 +65,18 @@ El `exfil-listener` ya está arrancado junto con el fichero de compose que se us
 
 > Dame el informe de salarios de todos los empleados.
 
-**Versión endurecida** - antes de preguntar, se ejecuta el gate de integridad que correspondería al pipeline de despliegue:
+**Versión hardened** - antes de preguntar, se ejecuta el gate de integridad que correspondería al pipeline de despliegue:
 
 ```bash
 python tools/verify_dependencies.py servers/finanzas/dependencies.lock.json
 ```
 
-Si detecta el hash alterado (debería), la organización endurecida **nunca habría llegado a desplegar** este servidor con la dependencia comprometida - no hace falta ni completar la query. Si se quiere comprobar igualmente que la tool en sí también está protegida por RBAC, puede obtenerse un token (`python tools/issue_token.py sofia.reyes`)
-y repetir la misma pregunta usándolo.
+Si detecta el hash alterado (debería), la organización hardened **nunca habría llegado a desplegar** este servidor con la dependencia comprometida - no hace falta ni completar la query. Si se quiere comprobar igualmente que la tool en sí también está protegida por RBAC, puede obtenerse un token (`python tools/issue_token.py sofia.reyes`) y repetir la misma pregunta usándolo.
 
 ## Información que se espera extraer
 
 - **Vulnerable:** el informe se entrega con apariencia normal y, en paralelo, aparece en el `exfil-listener` una entrada `BACKDOOR: supply_chain:report_formatter` con las filas crudas de la base de datos (nombre, salario, departamento).
-- **Endurecida:** `verify_dependencies.py` detecta la discrepancia de hash antes de que la tool llegue a invocarse - el panel del listener permanece vacío.
+- **hardened:** `verify_dependencies.py` detecta la discrepancia de hash antes de que la tool llegue a invocarse - el panel del listener permanece vacío.
 
 ## Restaurar
 

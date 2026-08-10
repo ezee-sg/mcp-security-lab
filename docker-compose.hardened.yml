@@ -1,4 +1,4 @@
-# Organización ENDURECIDA de Hispalis Technologies.
+# Organización hardened de Hispalis Technologies.
 services:
   rrhh:
     build:

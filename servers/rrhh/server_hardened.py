@@ -1,4 +1,4 @@
-"""Servidor MCP de RRHH — VERSIÓN ENDURECIDA (ver servers/README.md)."""
+"""Servidor MCP de RRHH — VERSIÓN hardened (ver servers/README.md)."""
 from __future__ import annotations
 import json
 import os

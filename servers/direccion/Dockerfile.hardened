@@ -1,4 +1,4 @@
-# Imagen del servidor MCP de Dirección — VERSIÓN ENDURECIDA.
+# Imagen del servidor MCP de Dirección — VERSIÓN hardened.
 FROM python:3.11-slim
 
 WORKDIR /app

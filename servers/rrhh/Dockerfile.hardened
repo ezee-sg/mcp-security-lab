@@ -1,4 +1,4 @@
-# Imagen del servidor MCP de RRHH — VERSIÓN ENDURECIDA.
+# Imagen del servidor MCP de RRHH — VERSIÓN hardened.
 # Construir desde la raíz del repositorio: docker build -f servers/rrhh/Dockerfile.hardened .
 FROM python:3.11-slim
 

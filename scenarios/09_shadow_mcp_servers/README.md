@@ -8,7 +8,7 @@ Acceder a datos sensibles a través de un servidor MCP que nadie está vigilando
 
 ## Servidor(es) MCP involucrados
 
-- **shadow-analytics** (`hispalis-shadow-analytics-UNOFFICIAL`) - no gobernado, sin versión endurecida (por definición: la mitigación es detectarlo, no arreglar su código)
+- **shadow-analytics** (`hispalis-shadow-analytics-UNOFFICIAL`) - no gobernado, sin versión hardened (por definición: la mitigación es detectarlo, no arreglar su código)
 
 ## Tool(s) MCP invocada(s)
 
@@ -45,7 +45,7 @@ Un volcado completo de las tablas `employees` e `invoices` de la base de datos d
 python tools/check_shadow_servers.py
 ```
 
-Este escáner recorre `servers/`, detecta cualquier `server.py` que no figure en `servers/registry.json` y lo reporta como ALERTA. Es el único mecanismo de este laboratorio que "mitiga" este escenario - no hay ninguna versión endurecida de `shadow-analytics` en sí, porque el problema no es cómo está construido, sino que existe fuera de cualquier proceso de revisión.
+Este escáner recorre `servers/`, detecta cualquier `server.py` que no figure en `servers/registry.json` y lo reporta como ALERTA. Es el único mecanismo de este laboratorio que "mitiga" este escenario - no hay ninguna versión hardened de `shadow-analytics` en sí, porque el problema no es cómo está construido, sino que existe fuera de cualquier proceso de revisión.
 
 Cada hallazgo se registra también en `logs/audit.log` (evento `shadow_server_detected`), que el SIEM recoge igual que cualquier otra entrada: dispara la regla `100102` de Wazuh y aparece en el panel "Shadow MCP Servers detectados" de Grafana. De esta forma, encontrar un servidor no gobernado deja el mismo tipo de rastro observable que un acceso denegado por RBAC.
 

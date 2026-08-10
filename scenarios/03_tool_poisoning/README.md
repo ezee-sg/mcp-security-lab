@@ -10,15 +10,12 @@
 
 ## Servidor(es) MCP involucrados
 
-- **A)** RRHH (`hispalis-rrhh-vulnerable` / `-hardened`) **y** Dirección
-  (`hispalis-direccion-vulnerable` / `-hardened`) - deben estar conectados **a la vez** en el mismo cliente, para que el modelo pueda encadenar la llamada de uno a otro.
+- **A)** RRHH (`hispalis-rrhh-vulnerable` / `-hardened`) **y** Dirección (`hispalis-direccion-vulnerable` / `-hardened`) - deben estar conectados **a la vez** en el mismo cliente, para que el modelo pueda encadenar la llamada de uno a otro.
 - **B)** IT (`hispalis-it-vulnerable` / `-hardened`)
 
 ## Tool(s) MCP invocada(s)
 
-- **A)** `get_employee` (RRHH) - invocada por el usuario; desencadena, si el modelo
-  sigue la instrucción oculta, una llamada adicional no solicitada a
-  `get_strategic_documents` (Dirección)
+- **A)** `get_employee` (RRHH) - invocada por el usuario; desencadena, si el modelo sigue la instrucción oculta, una llamada adicional no solicitada a `get_strategic_documents` (Dirección)
 - **B)** `send_notification` (IT)
 
 ---
@@ -51,8 +48,8 @@ herramientas del cliente (o pedirle al asistente "¿qué hace la herramienta get
 
 ### Información que se espera extraer
 
-- **Vulnerable:** la respuesta incluye la ficha de Ana García **y**, sin que se haya solicitado, el contenido de los documentos estratégicos confidenciales de Dirección (planes de expansión, actas del consejo...).
-- **Endurecida:** `dir.get_strategic_documents` exige rol `director`; aunque el modelo intente la llamada inyectada, el servidor de Dirección la rechaza si se usa un `session_token` de otro rol (puede probarse con `python tools/issue_token.py luis.perez`).
+- **Vulnerable:** la respuesta incluye la ficha de Ana García y, sin que se haya solicitado, el contenido de los documentos estratégicos confidenciales de Dirección (planes de expansión, actas del consejo...).
+- **hardened:** `dir.get_strategic_documents` exige rol `director`; aunque el modelo intente la llamada inyectada, el servidor de Dirección la rechaza si se usa un `session_token` de otro rol (puede probarse con `python tools/issue_token.py luis.perez`).
 
 ### Restaurar
 
@@ -90,11 +87,10 @@ No hace falta reiniciar el servidor: el fichero se comprueba en cada llamada, no
 
 ### Información que se espera extraer
 
-El `exfil-listener` ya está arrancado junto con el fichero de compose que se use,
-en `http://localhost:8888`:
+El `exfil-listener` ya está arrancado junto con el fichero de compose que se use, en `http://localhost:8888`:
 
 - **Vulnerable:** la notificación "legítima" se envía con normalidad y, en paralelo, aparece una entrada `BACKDOOR: rug_pull:it.send_notification` en el panel del listener con una copia de los parámetros enviados.
-- **Endurecida:** la whitelist de destinos bloquea cualquier envío real fuera de `@hispalis.tech`/`127.0.0.1:9000`, así que el "gancho" oculto no llega a ejecutarse contra un host externo; en su lugar, `logs/audit.log` registra una entrada de ALERTA señalando que el comportamiento de la tool difiere del verificado.
+- **hardened:** el "gancho" oculto no existe como código en esta versión (no hay ninguna llamada al exfil-listener que bloquear) - fue sustituido directamente por una detección: la notificación legítima se envía con normalidad (sin nada visible para el usuario) y, en su lugar, `logs/audit.log` registra una entrada con `"success": false` y el texto `ALERTA: comportamiento de la tool difiere de la version verificada (posible Rug Pull)`. Con el SIEM levantado, esa misma entrada dispara la regla Wazuh `100101` (nivel 10, grupo `mcp_rbac`) y aparece en el dashboard. La comprobación, por tanto, es sobre `logs/audit.log` (o el SIEM), no sobre el panel del exfil-listener - ahí no debe aparecer nada nuevo.
 
 ### Restaurar
 

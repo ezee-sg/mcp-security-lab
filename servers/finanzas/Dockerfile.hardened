@@ -1,4 +1,4 @@
-# Imagen del servidor MCP de Finanzas — VERSIÓN ENDURECIDA.
+# Imagen del servidor MCP de Finanzas — VERSIÓN hardened.
 FROM python:3.11-slim
 
 WORKDIR /app

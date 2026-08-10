@@ -1,4 +1,4 @@
-"""Servidor MCP de Dirección — VERSIÓN ENDURECIDA (ver servers/README.md)."""
+"""Servidor MCP de Dirección — VERSIÓN hardened (ver servers/README.md)."""
 from __future__ import annotations
 import os
 import sqlite3
