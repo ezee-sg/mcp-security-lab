@@ -6,10 +6,10 @@ No añade ningún system prompt de seguridad ni detección de prompt injection p
 
 ## Requisito: Ollama en el host
 
-El contenedor no trae ningún modelo — llama al Ollama que corre en la máquina anfitriona (`http://host.docker.internal:11434`), igual que si se usara [`tools/local_llm_chat.py`](../tools/local_llm_chat.py) en local. Antes de levantar el compose:
+El contenedor no trae ningún modelo — llama al Ollama que corre en la máquina anfitriona (`http://host.docker.internal:11434`), igual que si se usara [`tools/local_llm_chat.py`](../tools/local_llm_chat.py) en local. Antes de levantar el compose, descargar el modelo que fija `OLLAMA_MODEL` en ambos ficheros de compose:
 
 ```bash
-ollama pull llama3.1
+ollama pull qwen2.5:7b
 ```
 
 (y tener Ollama arrancado — se inicia solo tras instalarlo, o con `ollama serve`).
@@ -32,9 +32,9 @@ Y abrir `http://localhost:8000`. El contenedor se conecta automáticamente a los
 |---|---|---|
 | `MCP_SERVERS` | URLs de los servidores MCP, separadas por comas | los 4 del fichero de compose correspondiente |
 | `OLLAMA_URL` | Endpoint de chat de Ollama | `http://host.docker.internal:11434/api/chat` |
-| `OLLAMA_MODEL` | Modelo de Ollama a usar | `llama3.1` |
+| `OLLAMA_MODEL` | Modelo de Ollama a usar | `qwen2.5:7b` (si se ejecuta `app.py` nativo sin fijar esta variable, cae al valor por defecto del propio script, `llama3.1`) |
 
-Para cambiar de modelo sin editar el compose: `OLLAMA_MODEL=qwen2.5:7b docker compose -f docker-compose.vulnerable.yml up -d --build local-llm-chat` (o directamente editar la línea `OLLAMA_MODEL` del servicio).
+Para cambiar de modelo sin editar el compose: `OLLAMA_MODEL=llama3.1 docker compose -f docker-compose.vulnerable.yml up -d --build local-llm-chat` (o directamente editar la línea `OLLAMA_MODEL` del servicio).
 
 ## Uso manual (sin Docker)
 

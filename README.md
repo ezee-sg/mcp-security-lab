@@ -8,6 +8,8 @@ El laboratorio se despliega con **dos ficheros Docker Compose independientes** (
 
 > ⚠️ Entorno de aprendizaje. No usar contra datos reales ni exponerlo en redes no controladas. Las credenciales, tokens y "secretos" de este repositorio son ficticios.
 
+> ℹ️ Limitación conocida: ninguna de las dos versiones exige autenticación para abrir la conexión MCP en sí (solo a nivel de tool, vía `session_token`) - ver [`scenarios/07_insufficient_auth_authorization/README.md`](scenarios/07_insufficient_auth_authorization/README.md#limitación-conocida-sin-autenticación-de-transporte).
+
 ## Estructura del repositorio
 
 ```
@@ -74,7 +76,7 @@ docker compose -f siem/wazuh/generate-certs.docker-compose.yml run --rm generato
 
 Con el laboratorio ya arrancado, ver [`mcp-config/README.md`](mcp-config/README.md): un fichero de configuración por cliente, con nombre descriptivo, todos apuntando por URL a los mismos puertos de `docker-compose.vulnerable.yml` / `docker-compose.hardened.yml`.
 
-El propio compose despliega también `local-llm-chat` (ver [`local-llm-web/README.md`](local-llm-web/README.md)): un chat web con aspecto de asistente interno de empresa, conectado a los 4 servidores de ese fichero y a un modelo local vía [Ollama](https://ollama.com/) — útil para reproducir los escenarios sin el alineamiento de seguridad de Claude. Con Ollama instalado y un modelo descargado (`ollama pull llama3.1`), solo hace falta abrir `http://localhost:8000`.
+El propio compose despliega también `local-llm-chat` (ver [`local-llm-web/README.md`](local-llm-web/README.md)): un chat web con aspecto de asistente interno de empresa, conectado a los 4 servidores de ese fichero y a un modelo local vía [Ollama](https://ollama.com/) — útil para reproducir los escenarios sin el alineamiento de seguridad de Claude. Con Ollama instalado y un modelo descargado (`ollama pull qwen2.5:7b`, el que fija `OLLAMA_MODEL` en ambos compose), solo hace falta abrir `http://localhost:8000`.
 
 Para inspeccionar un servidor suelto sin cliente de chat:
 
@@ -123,6 +125,10 @@ Ver [`tools/README.md`](tools/README.md) para qué hace cada una (incluida `issu
 ### 7. SIEM (Wazuh + Grafana), parte del despliegue hardened
 
 Aporta trazabilidad real de accesos indebidos (mitigación de MCP08) sobre `logs/audit.log`: Wazuh genera una alerta por cada llamada denegada por RBAC y Grafana la visualiza en un panel. Los 4 servicios (`wazuh.manager`, `wazuh.indexer`, `wazuh.dashboard`, `grafana`) están definidos en el mismo `docker-compose.hardened.yml`, no en un fichero aparte — suben y bajan junto con los servidores MCP. Ver [`siem/README.md`](siem/README.md) para el detalle completo: arquitectura, alertas, credenciales y cómo comprobarlo.
+
+## Licencia
+
+[MIT](LICENSE).
 
 ## Los 10 escenarios (uno por categoría OWASP MCP Top 10)
 

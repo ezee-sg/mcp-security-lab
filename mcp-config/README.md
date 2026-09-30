@@ -35,10 +35,10 @@ A diferencia de los otros tres, Inspector no lee ningún fichero de configuraci�
 
 Alternativa a los cuatro clientes anteriores para reproducir los escenarios contra un modelo que **no** tiene el alineamiento/entrenamiento de seguridad de Claude — útil cuando se quiere observar el efecto de una tool poisoning/prompt injection sin que el modelo la reconozca y la rechace por su cuenta. No añade ningún system prompt de seguridad ni detección de prompt injection propia: lo que el modelo haga con el contenido de una tool depende solo de él.
 
-Requiere [Ollama](https://ollama.com/) instalado en el host, con un modelo que soporte tool-calling ya descargado:
+Requiere [Ollama](https://ollama.com/) instalado en el host, con un modelo que soporte tool-calling ya descargado — el que fija `OLLAMA_MODEL` en ambos `docker-compose.*.yml`:
 
 ```bash
-ollama pull llama3.1
+ollama pull qwen2.5:7b
 ```
 
 Hay dos formas de usarlo:
@@ -52,4 +52,6 @@ Hay dos formas de usarlo:
 En ambos casos, se escribe la misma query que indica el escenario tal cual, y para la versión hardened se incluye el `session_token` (`python tools/issue_token.py <usuario>`) en el propio mensaje, igual que con los demás clientes. Cada `tool_call` y su resultado se muestran como evidencia (en el chat web, como nota técnica entre mensajes; en la CLI, por consola).
 
 Los resources MCP (como `it://tickets/latest`, usado en el escenario 06) también están disponibles: se exponen al modelo como tools sintéticas de solo lectura, ya que Ollama no tiene un concepto nativo de "resource".
+
+Las confirmaciones HITL (`ctx.elicit`, ver `it.send_notification` hardened) se **auto-aceptan** automáticamente en ambos harnesses — no hay un usuario humano real detrás que pueda rechazarlas, a diferencia de Claude Desktop o VS Code, que sí muestran un diálogo de confirmación real. Queda constancia en el log de consola del proceso (`[elicitation] '<mensaje>' -> auto-aceptada`).
 

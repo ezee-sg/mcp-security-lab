@@ -23,12 +23,11 @@ basado en roles.
   permitidos; lanza `PermissionError` en caso contrario, o devuelve el payload
   decodificado (`sub`, `role`, `department`, `employee_id`).
 
-  **Por qué es una función y no un decorador:** el snippet ilustrativo de la
-  memoria (`06-defensa-hardening.tex`) muestra un decorador `@require_role(...)`.
-  Aquí se invoca explícitamente como primera línea de cada tool en su lugar, porque
-  un decorador que absorbiera `session_token` mediante `**kwargs` lo ocultaría del
-  `inputSchema` que FastMCP expone al cliente MCP — y el cliente necesita saber que
-  ese parámetro existe para poder enviarlo.
+  **Por qué es una función y no un decorador:** un decorador que absorbiera
+  `session_token` mediante `**kwargs` lo ocultaría del `inputSchema` que FastMCP
+  expone al cliente MCP — y el cliente necesita saber que ese parámetro existe para
+  poder enviarlo. Por eso se invoca explícitamente como primera línea de cada tool
+  en su lugar, aunque eso implique repetir la misma línea en cada una.
 
 ## `logging_utils.py` — auditoría estructurada
 
@@ -83,12 +82,16 @@ Dos funciones independientes, cada una mitigando una categoría OWASP distinta:
 
 `SessionContext`: contenedor de estado por sesión (caché de resultados
 `cache_set`/`cache_get`, ficheros temporales registrados con
-`register_temp_file`), con `cleanup()` para destruir ese estado de forma
-determinista al terminar la sesión.
+`register_temp_file`), con `cleanup()` para destruir ese estado.
 
 `get_or_create_session(session_id, user_role)` / `end_session(session_id)`:
 registro global (`_SESSIONS`) que asocia cada `session_id` con su
-`SessionContext`.
+`SessionContext`. **Nota:** ninguna tool de este laboratorio llama a
+`end_session()` — cada `SessionContext` vive mientras el proceso del servidor esté
+arriba, no "hasta que termine la sesión del usuario". El aislamiento que demuestra
+el escenario 10 es entre *usuarios* (cada uno tiene su propio `SessionContext`,
+indexado por `payload["sub"]`), no una limpieza automática al final de una
+conversación.
 
 Usado por `fin.get_salary_report` / `fin.get_cached_report`
 (`servers/finanzas/server_hardened.py`) para que la caché de un informe quede
